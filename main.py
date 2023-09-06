@@ -1,5 +1,6 @@
 import cv2
 import sys
+import time
 import atexit
 import logging
 import pigpio
@@ -34,16 +35,33 @@ Position Sensor	        Potentiometer
 MOTOR_PWM_FREQUENCY = 50
 MOTOR_PWM_RANGE = 400
 
-# a class with thermal video processing function
-class ThermalVideoUtils(object):
-    def __init__(self):
-        return
+'''
+Class used for video processing
+'''
+class VideoUtils(object):
 
-# a class control a turret with two servo motors
+    def process_thermal_video(self, camera_port = 0):
+        camera = cv2.VideoCapture(camera_port)
+        
+        while True:
+            ret, frame = camera.read()
+
+            if not ret:
+                logging.warning('--- Camera Error ---')
+                break
+
+
+        
+
+
+
+
+"""
+Class used for turret control
+control a turret with two servo motor
+"""
 class Turret(object):
-    """
-    Class used for turret control.
-    """
+
     def __init__(self):
         logging.getLogger().setLevel(logging.DEBUG)
         logging.info('Start initialize')
@@ -55,6 +73,7 @@ class Turret(object):
         self.pi.set_PWM_frequency(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY)
         self.pi.set_PWM_range(GPIO_MOTOR2, MOTOR_PWM_RANGE)
 
+        # set to relocate and release the motors
         atexit.register(self.__turn_of_motors)
         logging.info('Initialize sucess')
 
