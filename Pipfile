@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 opencv-python = "*"
 pigpio = "*"
+adafruit-circuitpython-mlx90640 = "*"
 
 [dev-packages]
 

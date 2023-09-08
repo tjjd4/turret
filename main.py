@@ -48,10 +48,7 @@ class VideoUtils(object):
 
             if not ret:
                 logging.warning('--- Camera Error ---')
-                break
-
-
-        
+                break     
 
 
 
@@ -94,3 +91,5 @@ class Turret(object):
         self.pi.write(GPIO_MOTOR1, 0)
         self.pi.write(GPIO_MOTOR2, 0)
         self.pi.stop()
+
+# if __name__ == '__main__':
