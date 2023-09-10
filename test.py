@@ -1,6 +1,7 @@
 import time
 import board
 import busio
+import numpy as np
 import adafruit_mlx90640
 
 i2c = busio.I2C(board.SCL, board.SDA, frequency=800000)
@@ -19,6 +20,10 @@ while True:
     except ValueError:
         # these happen, no biggie - retry
         continue
+
+    thermal_matrix =np.array(frame).reshape(24, 32)
+    highest_temp = thermal_matrix.max()
+    thermal_matrix[thermal_matrix != highest_temp] = 0
 
     for h in range(24):
         for w in range(32):
