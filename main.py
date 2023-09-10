@@ -1,9 +1,12 @@
 import cv2
 import sys
-import time
+import board
+import busio
 import atexit
 import logging
 import pigpio
+import numpy as np
+import adafruit_mlx90640
 
 '''
 Raspberry Pi 4 Model B
