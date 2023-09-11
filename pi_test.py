@@ -1,4 +1,5 @@
 import time
+import socket
 import board
 import busio
 import numpy as np
@@ -14,6 +15,18 @@ print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
 mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
 
 frame = [0] * 768
+
+SERVER_PORT = 2222
+SERVER_IP = '192.168.0.40'
+
+SERVER_ADDRESS = (SERVER_IP, SERVER_PORT)
+
+try:
+    rPiSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+except:
+    print("Socket Connection Error")
+
+
 while True:
     try:
         mlx.getFrame(frame)
@@ -27,9 +40,11 @@ while True:
 
     for h in range(24):
         for w in range(32):
-            t = frame[h*32 + w]
+            t = thermal_matrix[h*32 + w]
             print("%0.1f, " % t, end="")
         print()
     print()
     print(type(frame))
     print(type(thermal_matrix))
+
+    # rPiSocket.sendto(bytearray(thermal_matrix), SERVER_ADDRESS)
