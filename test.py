@@ -31,3 +31,5 @@ while True:
             print("%0.1f, " % t, end="")
         print()
     print()
+    print(type(frame))
+    print(type(thermal_matrix))
