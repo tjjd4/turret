@@ -43,15 +43,35 @@ Class used for video processing
 '''
 class VideoUtils(object):
 
-    def process_thermal_video(self, camera_port = 0):
-        camera = cv2.VideoCapture(camera_port)
-        
-        while True:
-            ret, frame = camera.read()
+    i2c = busio.I2C(board.SCL, board.SDA, frequency=800000)
 
-            if not ret:
-                logging.warning('--- Camera Error ---')
-                break     
+    mlx = adafruit_mlx90640.MLX90640(i2c)
+    print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
+
+    # if using higher refresh rates yields a 'too many retries' exception,
+    # try decreasing this value to work with certain pi/camera combinations
+    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+
+    frame = [0] * 768
+    while True:
+        try:
+            mlx.getFrame(frame)
+        except ValueError:
+            # these happen, no biggie - retry
+            continue
+
+        thermal_matrix =np.array(frame).reshape(24, 32)
+        highest_temp = thermal_matrix.max()
+        thermal_matrix[thermal_matrix != highest_temp] = 0
+
+        for h in range(24):
+            for w in range(32):
+                t = frame[h*32 + w]
+                print("%0.1f, " % t, end="")
+            print()
+        print()
+        print(type(frame))
+        print(type(thermal_matrix))
 
 
 
