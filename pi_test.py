@@ -37,14 +37,13 @@ while True:
     thermal_matrix =np.array(frame).reshape(24, 32)
     highest_temp = thermal_matrix.max()
     thermal_matrix[thermal_matrix != highest_temp] = 0
-
+    thermal_img = thermal_matrix.tolist()
     for h in range(24):
         for w in range(32):
-            t = thermal_matrix[h*32 + w]
+            t = frame[h*32 + w]
             print("%0.1f, " % t, end="")
         print()
     print()
-    print(type(frame))
-    print(type(thermal_matrix))
 
     # rPiSocket.sendto(bytearray(thermal_matrix), SERVER_ADDRESS)
+    # print('data sent')
