@@ -3,6 +3,7 @@ import sys
 import board
 import busio
 import atexit
+import threading
 import logging
 import pigpio
 import numpy as np
@@ -40,10 +41,26 @@ MOTOR_PWM_DUTY_CYCLE = 60000
 # MOTOR_PWM_RANGE = 400
 
 '''
-Class used for video processing
-'''
-class VideoUtils(object):
+MLX90640-BAA IR Thermal Camera
 
+I2C compatible digital interface
+Programmable refresh rate 0.5Hz…64Hz (0.25 ~ 32 FPS)
+3.3V-5V supply voltage, regulated to 3.3V on breakout
+Current consumption less than 23mA
+Field of view: 110°x75°
+Operating temperature -40°C ~ 85°C
+Target temperature -40°C ~ 300°C
+Product Dimensions: 25.8mm x 17.8mm x 10.5mm / 1.0" x 0.7" x 0.4"
+Product Weight: 3.0g / 0.1oz 
+'''
+IMAGE_CENTER_POINT_X = 15
+IMAGE_CENTER_POINT_Y = 11
+
+
+class VideoUtils(object):
+    '''
+    Class used for video processing
+    '''
     @staticmethod
     def trackHeat():
         i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
@@ -78,12 +95,11 @@ class VideoUtils(object):
 
 
 
-"""
-Class used for turret control
-control a turret with two servo motor
-"""
 class Turret(object):
-
+    '''
+    Class used for turret control
+    control a turret with two servo motor
+    '''
     def __init__(self):
         logging.getLogger().setLevel(logging.DEBUG)
         logging.info('Start initialize')
@@ -110,19 +126,34 @@ class Turret(object):
         self.m2_duty_cycle = MOTOR_PWM_DUTY_CYCLE
         logging.debug('Calibrate success')
 
-    def move(self, x, y):
+    def track(self, x, y):
+        
+        t_m1 = threading.Thread()
+        t_m2 = threading.Thread()
+
         if x > 0:
-            self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle + 100)
             self.m1_duty_cycle = self.m1_duty_cycle + 100
+            t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
         elif x < 0:
-            self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle - 100)
             self.m1_duty_cycle = self.m1_duty_cycle - 100
+            t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
         if y > 0:
-            self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle + 100)
             self.m2_duty_cycle = self.m2_duty_cycle + 100
+            t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
         elif y < 0:
-            self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle - 100)
             self.m2_duty_cycle = self.m2_duty_cycle - 100
+            t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
+
+        # starting thread (controlling motor)
+        t_m1.start()
+        t_m2.start()
+
+        # wait until thread end
+        t_m1.join()
+        t_m2.join()
+    
+    def move(self, motor, duty_cycle):
+        self.pi.hardware_PWM(motor, MOTOR_PWM_FREQUENCY, duty_cycle)
 
 
     # start thermal detection
