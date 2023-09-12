@@ -36,7 +36,8 @@ NO.of Wire	5Pin
 Position Sensor	        Potentiometer
 '''
 MOTOR_PWM_FREQUENCY = 50
-MOTOR_PWM_RANGE = 400
+MOTOR_PWM_DUTY_CYCLE = 60000
+# MOTOR_PWM_RANGE = 400
 
 '''
 Class used for video processing
@@ -45,7 +46,7 @@ class VideoUtils(object):
 
     @staticmethod
     def trackHeat():
-        i2c = busio.I2C(board.SCL, board.SDA, frequency=800000)
+        i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
 
         mlx = adafruit_mlx90640.MLX90640(i2c)
         print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
@@ -89,10 +90,12 @@ class Turret(object):
         self.pi = pigpio.pi()
         self.pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
         self.pi.set_mode(GPIO_MOTOR2, pigpio.OUTPUT)
-        self.pi.set_PWM_frequency(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY)
-        self.pi.set_PWM_range(GPIO_MOTOR1, MOTOR_PWM_RANGE)
-        self.pi.set_PWM_frequency(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY)
-        self.pi.set_PWM_range(GPIO_MOTOR2, MOTOR_PWM_RANGE)
+        self.currentX = 90
+        self.currentY = 90
+        # self.pi.set_PWM_frequency(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY)
+        # self.pi.set_PWM_range(GPIO_MOTOR1, MOTOR_PWM_RANGE)
+        # self.pi.set_PWM_frequency(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY)
+        # self.pi.set_PWM_range(GPIO_MOTOR2, MOTOR_PWM_RANGE)
 
         # set to relocate and release the motors
         atexit.register(self.__turn_of_motors)
@@ -101,17 +104,34 @@ class Turret(object):
     # calibrate two servo motors to central position
     def calibrate(self):
         logging.debug('Start calibrate')
-        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, 500000)
-        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, 500000)
+        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE)
+        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE)
+        self.m1_duty_cycle = MOTOR_PWM_DUTY_CYCLE
+        self.m2_duty_cycle = MOTOR_PWM_DUTY_CYCLE
         logging.debug('Calibrate success')
+
+    def move(self, x, y):
+        if x > 0:
+            self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle + 100)
+            self.m1_duty_cycle = self.m1_duty_cycle + 100
+        elif x < 0:
+            self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle - 100)
+            self.m1_duty_cycle = self.m1_duty_cycle - 100
+        if y > 0:
+            self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle + 100)
+            self.m2_duty_cycle = self.m2_duty_cycle + 100
+        elif y < 0:
+            self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, self.m1_duty_cycle - 100)
+            self.m2_duty_cycle = self.m2_duty_cycle - 100
+
 
     # start thermal detection
     def thermal_detection(self):
         return
 
     def __turn_of_motors(self):
-        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, 500000)
-        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, 250000)
+        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, 60000)
+        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, 60000)
         self.pi.write(GPIO_MOTOR1, 0)
         self.pi.write(GPIO_MOTOR2, 0)
         self.pi.stop()
