@@ -37,7 +37,9 @@ NO.of Wire	5Pin
 Position Sensor	        Potentiometer
 '''
 MOTOR_PWM_FREQUENCY = 50
-MOTOR_PWM_DUTY_CYCLE = 60000
+MOTOR_PWM_DUTY_CYCLE_180 = 120000
+MOTOR_PWM_DUTY_CYCLE_90 = 60000
+MOTOR_PWM_DUTY_CYCLE_0 = 20000
 # MOTOR_PWM_RANGE = 400
 
 '''
@@ -102,12 +104,10 @@ class Turret(object):
     '''
     def __init__(self):
         logging.getLogger().setLevel(logging.DEBUG)
-        logging.info('Start initialize')
+        logging.info('Turret Start initialize')
         self.pi = pigpio.pi()
         self.pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
         self.pi.set_mode(GPIO_MOTOR2, pigpio.OUTPUT)
-        self.currentX = 90
-        self.currentY = 90
         # self.pi.set_PWM_frequency(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY)
         # self.pi.set_PWM_range(GPIO_MOTOR1, MOTOR_PWM_RANGE)
         # self.pi.set_PWM_frequency(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY)
@@ -115,15 +115,15 @@ class Turret(object):
 
         # set to relocate and release the motors
         atexit.register(self.__turn_of_motors)
-        logging.info('Initialize sucess')
+        logging.info('Turret Initialize sucess')
 
     # calibrate two servo motors to central position
     def calibrate(self):
         logging.debug('Start calibrate')
-        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE)
-        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE)
-        self.m1_duty_cycle = MOTOR_PWM_DUTY_CYCLE
-        self.m2_duty_cycle = MOTOR_PWM_DUTY_CYCLE
+        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE_90)
+        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE_90)
+        self.m1_duty_cycle = MOTOR_PWM_DUTY_CYCLE_90
+        self.m2_duty_cycle = MOTOR_PWM_DUTY_CYCLE_90
         logging.debug('Calibrate success')
 
     def track(self, x, y):
@@ -131,18 +131,24 @@ class Turret(object):
         t_m1 = threading.Thread()
         t_m2 = threading.Thread()
 
+        
         if x > 0:
-            self.m1_duty_cycle = self.m1_duty_cycle + 100
-            t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
+            if self.m1_duty_cycle < MOTOR_PWM_DUTY_CYCLE_180:
+                self.m1_duty_cycle = self.m1_duty_cycle + 100
+                t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
         elif x < 0:
-            self.m1_duty_cycle = self.m1_duty_cycle - 100
-            t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
+            if self.m1_duty_cycle > MOTOR_PWM_DUTY_CYCLE_0:
+                self.m1_duty_cycle = self.m1_duty_cycle - 100
+                t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
+        
         if y > 0:
-            self.m2_duty_cycle = self.m2_duty_cycle + 100
-            t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
+            if self.m2_duty_cycle < MOTOR_PWM_DUTY_CYCLE_180:
+                self.m2_duty_cycle = self.m2_duty_cycle + 100
+                t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
         elif y < 0:
-            self.m2_duty_cycle = self.m2_duty_cycle - 100
-            t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
+            if self.m2_duty_cycle > MOTOR_PWM_DUTY_CYCLE_0:
+                self.m2_duty_cycle = self.m2_duty_cycle - 100
+                t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
 
         # starting thread (controlling motor)
         t_m1.start()
@@ -170,4 +176,10 @@ class Turret(object):
         self.pi.write(GPIO_MOTOR2, 0)
         self.pi.stop()
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
+
+    print('program activate')
+    print('-----------------')
+    t = Turret()
+    t.calibrate()
+    t.thermal_detection()
