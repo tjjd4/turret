@@ -108,6 +108,9 @@ class Turret(object):
     # start thermal detection
     def thermal_detection(self):
         return
+    
+    def move(self, frame):
+        h, w = frame.shape[:2]
 
     def __turn_of_motors(self):
         self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, 500000)
