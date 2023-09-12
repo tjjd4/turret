@@ -1,14 +1,54 @@
-# Turret
+Turret
+=============================
 
-This is a python program control automatic turret with termal camera
+This is a python program control automatic turret with termal camera through Raspberry Pi
+
+## Matirial
+single-board computers : [Raspberry Pi 4 model b](https://piepie.com.tw/product/raspberry-pi-4-model-b-4gb)
+
+Motors : [K-Power Hb200t * 2](https://www.made-in-china.com/showroom/servo-kyra/product-detailTyEQoAuWXwhO/China-K-Power-Hb200t-12V-200kg-Torque-Steel-Gear-Digital-Industrial-Servo.html)
+
+Thermal Camera: [MLX90640-BAA IR Thermal Camera](https://twarm.com/commerce/product_info.php?products_id=7218)
+
+## Raspberry Pi Setup
+[How to set up a Raspberry Pi](https://www.raspberrypi.com/tutorials/how-to-set-up-raspberry-pi/)
+
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install opencv.
+  ### Using `pip`
+  Use the package manager [pip](https://pip.pypa.io/en/stable/) to install python package.
+  Install the dependencies from `requirements.txt`
+  
+  ```bash
+  pip install
+  ```
+  
+  If the `requirements.txt` not found or outdated, you may have to use `pipenv`
 
-```bash
-pip install opencv-python
-```
+  ### Using `pipenv`
+  Using Python virtualenv management tool [pipenv](https://pipenv.pypa.io/en/latest/) to install and isolate python packages from other projects.
+  
+  > To install `pipenv`
+  > ```bash
+  > pip install --user pipenv
+  > ```
+
+  
+  Install the dependencies from `pipfile`
+  
+  ```bash
+  pipenv install
+  ```
+  Install the dependencies from `requirements.txt`
+  ```bash
+  pipenv install -r path/to/requirements.txt
+  ```
+  
+  If the `requirements.txt` not found or outdated, you may recreate it with `pipfile` from  `pipenv`:
+  ```bash
+  pipenv lock -r > requirements.txt
+  ```
 
 ## Usage
 
