@@ -1,4 +1,5 @@
-# Turret
+Turret
+=============================
 
 This is a python program control automatic turret with termal camera through Raspberry Pi
 
@@ -15,31 +16,37 @@ Thermal Camera: [MLX90640-BAA IR Thermal Camera](https://twarm.com/commerce/prod
 
 ## Installation
 
-### Using `pip`
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install python package.
-Install the dependencies from `requirements.txt`
+  ### Using `pip`
+  Use the package manager [pip](https://pip.pypa.io/en/stable/) to install python package.
+  Install the dependencies from `requirements.txt`
+  
+  ```bash
+  pip install
+  ```
+  
+  If the `requirements.txt` not found or outdated, you may have to use `pipenv`
 
-```bash
-pip install
-```
-
-### Using pipenv
-> To install `pipenv`
-> ```bash
-> pip install --user pipenv
-> ```
-Using Python virtualenv management tool [pipenv](https://pipenv.pypa.io/en/latest/) to install and isolate python package.
-
-Install the dependencies from `pipfile`
-
-```bash
-pipenv install
-```
-
-If the requirements.txt not found or outdated, you may recreate it with `pipfile` from pipenv:
-```bash
-pip install
-```
+  ### Using `pipenv`
+  > To install `pipenv`
+  > ```bash
+  > pip install --user pipenv
+  > ```
+  Using Python virtualenv management tool [pipenv](https://pipenv.pypa.io/en/latest/) to install and isolate python package.
+  
+  Install the dependencies from `pipfile`
+  
+  ```bash
+  pipenv install
+  ```
+  Install the dependencies from `requirements.txt`
+  ```bash
+  pipenv install -r path/to/requirements.txt
+  ```
+  
+  If the `requirements.txt` not found or outdated, you may recreate it with `pipfile` from  `pipenv`:
+  ```bash
+  pipenv lock -r > requirements.txt
+  ```
 
 ## Usage
 
