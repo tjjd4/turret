@@ -27,11 +27,13 @@ Thermal Camera: [MLX90640-BAA IR Thermal Camera](https://twarm.com/commerce/prod
   If the `requirements.txt` not found or outdated, you may have to use `pipenv`
 
   ### Using `pipenv`
+  Using Python virtualenv management tool [pipenv](https://pipenv.pypa.io/en/latest/) to install and isolate python packages from other projects.
+  
   > To install `pipenv`
   > ```bash
   > pip install --user pipenv
   > ```
-  Using Python virtualenv management tool [pipenv](https://pipenv.pypa.io/en/latest/) to install and isolate python package.
+
   
   Install the dependencies from `pipfile`
   
