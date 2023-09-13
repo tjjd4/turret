@@ -12,9 +12,9 @@ import numpy as np
 import cv2
 
 def init_mlx_sensor():
-    i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
+    i2c = busio.I2C(board.SCL, board.SDA, frequency=64)
     mlx = adafruit_mlx90640.MLX90640(i2c)
-    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_4_HZ
+    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_64_HZ
     print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
     return mlx
 
@@ -56,13 +56,22 @@ if __name__ == "__main__":
     TEMP_RANGE = (30, 40)
     mlx = init_mlx_sensor()
     frame = [0] * 768
-    
+    program_time = time.time()
+    count = 0
     while True:
+        start_time = time.time()
         try:
             mlx.getFrame(frame)
         except ValueError:
             print('Error reading frame')
             continue
+        except RuntimeError:
+            print("tooooooooooooooooo  many  retries")
+            print("program time : %s" % (time.time() - start_time))
+            print('Total frames count: '+count)
         
         thresholded_matrix, highest_temp = process_frame(frame)
         print_results(thresholded_matrix, highest_temp)
+
+        print("--- %s seconds ---" % (time.time() - start_time))
+        count+=1
