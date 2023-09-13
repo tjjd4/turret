@@ -66,11 +66,13 @@ if __name__ == "__main__":
             except ValueError:
                 print('Error reading frame')
                 continue
+            read_end_time = time.time()
             image_time = time.time()
             thresholded_matrix, highest_temp = process_frame(frame)
             print_results(thresholded_matrix, highest_temp)
-
+            
             print("--- total %s seconds ---" % (time.time() - start_time))
+            print("--- total %s seconds ---" % (time.time() - read_end_time))
             print("--- image process %s seconds ---" % (time.time() - image_time))
             count+=1
     except RuntimeError:
