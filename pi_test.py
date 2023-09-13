@@ -90,9 +90,11 @@ def thermal_detection():
         print("Key Board Interrupt")
         print("program time : %s" % (time.time() - program_time))
         print('Total frames count: '+str(count))
+        raise KeyboardInterrupt
 
 if __name__ == "__main__":
     TEMP_RANGE = (30, 40)
+    count = 0
     while True:
         try:
             thermal_detection()
@@ -100,4 +102,6 @@ if __name__ == "__main__":
             pass
         except KeyboardInterrupt:
             print("program end")
+            print("Restart Count : %s" % count)
             break
+        count+=1
