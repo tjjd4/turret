@@ -77,6 +77,6 @@ if __name__ == "__main__":
         print("program time : %s" % (time.time() - program_time))
         print('Total frames count: '+str(count))
     except KeyboardInterrupt:
-        print("tooooooooooooooooo  many  retries")
+        print("Key Board Interrupt")
         print("program time : %s" % (time.time() - program_time))
         print('Total frames count: '+str(count))
