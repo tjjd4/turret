@@ -55,7 +55,7 @@ def print_results(thresholded_matrix, highest_temp):
 if __name__ == "__main__":
     TEMP_RANGE = (30, 40)
     mlx = init_mlx_sensor()
-    mlx.frame = np.zeros((24, 32), dtype=np.float32)
+    frame = [0] * 768
     frame_interval = 1.0 / 4
     program_time = time.time()
     count = 0
