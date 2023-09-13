@@ -14,7 +14,7 @@ import cv2
 def init_mlx_sensor():
     i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
     mlx = adafruit_mlx90640.MLX90640(i2c)
-    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_8_HZ
+    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
     print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
     return mlx
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     TEMP_RANGE = (30, 40)
     mlx = init_mlx_sensor()
     frame = [0] * 768
-    frame_interval = 1.0 / 4
+    frame_interval = 1.0 / 16
     program_time = time.time()
     count = 0
     try:
