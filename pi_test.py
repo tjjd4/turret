@@ -4,12 +4,6 @@ import busio
 import numpy as np
 import adafruit_mlx90640
 
-import time
-import board
-import busio
-import adafruit_mlx90640
-import numpy as np
-import cv2
 
 def init_mlx_sensor():
     i2c = busio.I2C(board.SCL, board.SDA, frequency=1600000)
