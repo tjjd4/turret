@@ -56,6 +56,7 @@ if __name__ == "__main__":
     TEMP_RANGE = (30, 40)
     mlx = init_mlx_sensor()
     frame = [0] * 768
+    interval = 0.25
     program_time = time.time()
     count = 0
     try:
@@ -72,11 +73,16 @@ if __name__ == "__main__":
             except ValueError:
                 print('Error reading frame')
                 continue
+            elapsed_time = time.time() - start_time
             
             print("--- total %s seconds ---" % (time.time() - start_time))
             print("--- read image time %s seconds ---" % (read_end_time - start_time))
             print("--- image process %s seconds ---" % (time.time() - image_time))
             count+=1
+            if elapsed_time < interval:
+                print("Sleeping for : %s" % (interval - elapsed_time))
+                time.sleep(interval - elapsed_time)
+                
     except RuntimeError:
         print("tooooooooooooooooo  many  retries")
         print("program time : %s" % (time.time() - program_time))
