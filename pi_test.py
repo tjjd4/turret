@@ -12,7 +12,7 @@ import numpy as np
 import cv2
 
 def init_mlx_sensor():
-    i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
+    i2c = busio.I2C(board.SCL, board.SDA, frequency=1600000)
     mlx = adafruit_mlx90640.MLX90640(i2c)
     mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
     print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
@@ -52,8 +52,7 @@ def print_results(thresholded_matrix, highest_temp):
         print(", ".join(["%d" % (value//255) for value in row]))
     print("_______")
 
-if __name__ == "__main__":
-    TEMP_RANGE = (30, 40)
+def thermal_detection():
     mlx = init_mlx_sensor()
     frame = [0] * 768
     frame_interval = 1.0 / 16
@@ -91,3 +90,14 @@ if __name__ == "__main__":
         print("Key Board Interrupt")
         print("program time : %s" % (time.time() - program_time))
         print('Total frames count: '+str(count))
+
+if __name__ == "__main__":
+    TEMP_RANGE = (30, 40)
+    while True:
+        try:
+            thermal_detection()
+        except Exception as e:
+            pass
+        except KeyboardInterrupt:
+            print("program end")
+            break
