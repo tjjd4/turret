@@ -60,9 +60,11 @@ if __name__ == "__main__":
     count = 0
     try:
         while True:
-            start_time = time.time()
             try:
+                start_time = time.time()
+                print("start next frame")
                 mlx.getFrame(frame)
+                print("frame get")
                 read_end_time = time.time()
                 image_time = time.time()
                 thresholded_matrix, highest_temp = process_frame(frame)
