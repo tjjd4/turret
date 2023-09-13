@@ -61,50 +61,33 @@ if __name__ == "__main__":
     count = 0
     try:
         while True:
-            start_time = time.time()  # 记录开始时间
-
-            mlx.getFrame(frame)  # 获取温度数据帧
-            for row in frame:
-                print("get")
-
-            elapsed_time = time.time() - start_time  # 计算已经花费的时间
-            print("total time : %s" % elapsed_time)
-            # 如果已经花费的时间小于时间间隔，等待剩余时间
-            if elapsed_time < frame_interval:
-                print("Sleeping for : %s" % (frame_interval - elapsed_time))
-                time.sleep(frame_interval - elapsed_time)
+            try:
+                start_time = time.time()
+                print("start next frame")
+                mlx.getFrame(frame)
+                print("frame get")
+                # read_end_time = time.time()
+                # image_time = time.time()
+                # thresholded_matrix, highest_temp = process_frame(frame)
+                # print_results(thresholded_matrix, highest_temp)
+                elapsed_time = time.time() - start_time
+            
+                print("--- total %s seconds ---" % (time.time() - start_time))
+                # print("--- read image time %s seconds ---" % (read_end_time - start_time))
+                # print("--- image process %s seconds ---" % (time.time() - image_time))
+                count+=1
+                if elapsed_time < frame_interval:
+                    print("Sleeping for : %s" % (frame_interval - elapsed_time))
+                    time.sleep(frame_interval - elapsed_time)
+            except ValueError:
+                print('Error reading frame')
+                continue
+               
+    except RuntimeError:
+        print("tooooooooooooooooo  many  retries")
+        print("program time : %s" % (time.time() - program_time))
+        print('Total frames count: '+str(count))
     except KeyboardInterrupt:
-        pass
-    # try:
-    #     while True:
-    #         try:
-    #             start_time = time.time()
-    #             print("start next frame")
-    #             mlx.getFrame(frame)
-    #             print("frame get")
-    #             read_end_time = time.time()
-    #             image_time = time.time()
-    #             thresholded_matrix, highest_temp = process_frame(frame)
-    #             print_results(thresholded_matrix, highest_temp)
-    #             elapsed_time = time.time() - start_time
-            
-    #             print("--- total %s seconds ---" % (time.time() - start_time))
-    #             print("--- read image time %s seconds ---" % (read_end_time - start_time))
-    #             print("--- image process %s seconds ---" % (time.time() - image_time))
-    #             count+=1
-    #             if elapsed_time < interval:
-    #                 print("Sleeping for : %s" % (interval - elapsed_time))
-    #                 time.sleep(interval - elapsed_time)
-    #         except ValueError:
-    #             print('Error reading frame')
-    #             continue
-            
-                
-    # except RuntimeError:
-    #     print("tooooooooooooooooo  many  retries")
-    #     print("program time : %s" % (time.time() - program_time))
-    #     print('Total frames count: '+str(count))
-    # except KeyboardInterrupt:
-    #     print("Key Board Interrupt")
-    #     print("program time : %s" % (time.time() - program_time))
-    #     print('Total frames count: '+str(count))
+        print("Key Board Interrupt")
+        print("program time : %s" % (time.time() - program_time))
+        print('Total frames count: '+str(count))
