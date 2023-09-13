@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
             mlx.getFrame(frame)  # 获取温度数据帧
             for row in frame:
-                print(["{:.2f}".format(temp) for temp in row])
+                print("get")
 
             elapsed_time = time.time() - start_time  # 计算已经花费的时间
             print("total time : %s" % elapsed_time)
