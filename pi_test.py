@@ -63,13 +63,13 @@ if __name__ == "__main__":
             start_time = time.time()
             try:
                 mlx.getFrame(frame)
+                read_end_time = time.time()
+                image_time = time.time()
+                thresholded_matrix, highest_temp = process_frame(frame)
+                print_results(thresholded_matrix, highest_temp)
             except ValueError:
                 print('Error reading frame')
                 continue
-            read_end_time = time.time()
-            image_time = time.time()
-            thresholded_matrix, highest_temp = process_frame(frame)
-            print_results(thresholded_matrix, highest_temp)
             
             print("--- total %s seconds ---" % (time.time() - start_time))
             print("--- read image time %s seconds ---" % (read_end_time - start_time))
