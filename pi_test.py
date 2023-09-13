@@ -67,7 +67,7 @@ if __name__ == "__main__":
             continue
         except RuntimeError:
             print("tooooooooooooooooo  many  retries")
-            print("program time : %s" % (time.time() - start_time))
+            print("program time : %s" % (time.time() - program_time))
             print('Total frames count: '+str(count))
         
         thresholded_matrix, highest_temp = process_frame(frame)
