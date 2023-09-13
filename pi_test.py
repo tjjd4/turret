@@ -58,20 +58,25 @@ if __name__ == "__main__":
     frame = [0] * 768
     program_time = time.time()
     count = 0
-    while True:
-        start_time = time.time()
-        try:
-            mlx.getFrame(frame)
-        except ValueError:
-            print('Error reading frame')
-            continue
-        except RuntimeError:
-            print("tooooooooooooooooo  many  retries")
-            print("program time : %s" % (time.time() - program_time))
-            print('Total frames count: '+str(count))
-        
-        thresholded_matrix, highest_temp = process_frame(frame)
-        print_results(thresholded_matrix, highest_temp)
+    try:
+        while True:
+            start_time = time.time()
+            try:
+                mlx.getFrame(frame)
+            except ValueError:
+                print('Error reading frame')
+                continue
+            
+            thresholded_matrix, highest_temp = process_frame(frame)
+            print_results(thresholded_matrix, highest_temp)
 
-        print("--- %s seconds ---" % (time.time() - start_time))
-        count+=1
+            print("--- %s seconds ---" % (time.time() - start_time))
+            count+=1
+    except RuntimeError:
+        print("tooooooooooooooooo  many  retries")
+        print("program time : %s" % (time.time() - program_time))
+        print('Total frames count: '+str(count))
+    except KeyboardInterrupt:
+        print("tooooooooooooooooo  many  retries")
+        print("program time : %s" % (time.time() - program_time))
+        print('Total frames count: '+str(count))
