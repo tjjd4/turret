@@ -72,7 +72,7 @@ if __name__ == "__main__":
             print_results(thresholded_matrix, highest_temp)
             
             print("--- total %s seconds ---" % (time.time() - start_time))
-            print("--- total %s seconds ---" % (time.time() - read_end_time))
+            print("--- read image time %s seconds ---" % (read_end_time - start_time))
             print("--- image process %s seconds ---" % (time.time() - image_time))
             count+=1
     except RuntimeError:
