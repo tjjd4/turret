@@ -47,7 +47,7 @@ def print_results(thresholded_matrix, highest_temp):
         print(", ".join(["%d" % (value//255) for value in row]))
     print("_______")
 
-def thermal_detection():
+def thermal_detection(show_video = False):
     mlx = init_mlx_sensor()
     frame = [0] * 768
     frame_interval = 1.0 / 16
@@ -70,13 +70,19 @@ def thermal_detection():
                 print("--- read image time %s seconds ---" % (read_end_time - start_time))
                 print("--- image process %s seconds ---" % (time.time() - image_time))
                 count+=1
+                if show_video:
+                    cv2.imshow("Security Feed", frame)
+                    key = cv2.waitKey(1) & 0xFF
+
+                # if the `q` key is pressed, break from the lop
+                    if key == ord("q"):
+                        break
                 if elapsed_time < frame_interval:
                     print("Sleeping for : %s" % (frame_interval - elapsed_time))
                     time.sleep(frame_interval - elapsed_time)
             except ValueError:
                 print('Error reading frame')
-                continue
-               
+                continue       
     except RuntimeError:
         print("tooooooooooooooooo  many  retries")
         print("program time : %s" % (time.time() - program_time))
@@ -92,7 +98,7 @@ if __name__ == "__main__":
     count = 0
     while True:
         try:
-            thermal_detection()
+            thermal_detection(show_video=True)
         except Exception as e:
             pass
         except KeyboardInterrupt:
