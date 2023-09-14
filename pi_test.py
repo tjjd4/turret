@@ -71,7 +71,8 @@ def thermal_detection(show_video = False):
                 print("--- image process %s seconds ---" % (time.time() - image_time))
                 count+=1
                 if show_video:
-                    cv2.imshow("Security Feed", frame)
+                    heatmap = cv2.applyColorMap(frame, cv2.COLORMAP_HOT)
+                    cv2.imshow('heatmap', heatmap)
                     key = cv2.waitKey(1) & 0xFF
 
                 # if the `q` key is pressed, break from the lop
