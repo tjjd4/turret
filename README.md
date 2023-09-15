@@ -49,10 +49,13 @@ Thermal Camera: [MLX90640-BAA IR Thermal Camera](https://twarm.com/commerce/prod
   pipenv lock -r > requirements.txt
   ```
   ### Adafruit_CircuitPython_MLX90640
-  Original Repository : [Adafruit_CircuitPython_MLX90640](https://github.com/adafruit/Adafruit_CircuitPython_MLX90640.git)
+  **Original Repository** : [Adafruit_CircuitPython_MLX90640](https://github.com/adafruit/Adafruit_CircuitPython_MLX90640.git)
+  
   The original repository (python) is unable to use the frequency above 8 Hz with thermal camera.
+  
   To make is work on 8 Hz and above, it is needed to make some changes in the original repository.
-  Edited Repository ( 8 Hz and above frequency enable ) : [Adafruit_CircuitPython_MLX90640](https://github.com/seantjjd4/Adafruit_CircuitPython_MLX90640.git)
+  
+  **Edited Repository ( 8 Hz and above frequency enable )** : [Adafruit_CircuitPython_MLX90640](https://github.com/seantjjd4/Adafruit_CircuitPython_MLX90640.git)
 
   ```bash
   git clone https://github.com/seantjjd4/Adafruit_CircuitPython_MLX90640.git
