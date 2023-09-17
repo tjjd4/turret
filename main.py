@@ -36,10 +36,21 @@ Communication Method	PWM(deadband 1-2μs)
 NO.of Wire	5Pin
 Position Sensor	        Potentiometer
 '''
-MOTOR_PWM_FREQUENCY = 50
-MOTOR_PWM_DUTY_CYCLE_180 = 120000
-MOTOR_PWM_DUTY_CYCLE_90 = 60000
-MOTOR_PWM_DUTY_CYCLE_0 = 20000
+
+# using pulsewidth to control motor spin to a specific angle
+# using set_servo_pulsewidth to move to certain angle,
+# and get_servo_pulsewidth to get the signal pulsewidth passing to motor.
+
+MOTOR_PULSEWIDTH_MIN = 1000
+MOTOR_PULSEWIDTH_MID = 1500
+MOTOR_PULSEWIDTH_MAX = 1900
+
+# not using pi.hardware_PWM() to control the motor, using pi.set_servo_pulsewidth() instead.
+# 
+# MOTOR_PWM_FREQUENCY = 50
+# MOTOR_PWM_DUTY_CYCLE_180 = 120000
+# MOTOR_PWM_DUTY_CYCLE_90 = 60000
+# MOTOR_PWM_DUTY_CYCLE_0 = 20000
 # MOTOR_PWM_RANGE = 400
 
 '''
@@ -120,10 +131,10 @@ class Turret(object):
     # calibrate two servo motors to central position
     def calibrate(self):
         logging.debug('Start calibrate')
-        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE_90)
-        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, MOTOR_PWM_DUTY_CYCLE_90)
-        self.m1_duty_cycle = MOTOR_PWM_DUTY_CYCLE_90
-        self.m2_duty_cycle = MOTOR_PWM_DUTY_CYCLE_90
+        self.pi.set_servo_pulsewidth(GPIO_MOTOR1, MOTOR_PULSEWIDTH_MID)
+        self.pi.set_servo_pulsewidth(GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID)
+        self.m1_pulsewidth = MOTOR_PULSEWIDTH_MID
+        self.m2_pulsewidth = MOTOR_PULSEWIDTH_MID
         logging.debug('Calibrate success')
 
     def track(self, x, y):
@@ -133,22 +144,22 @@ class Turret(object):
 
         
         if x > 0:
-            if self.m1_duty_cycle < MOTOR_PWM_DUTY_CYCLE_180:
-                self.m1_duty_cycle = self.m1_duty_cycle + 100
-                t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
+            if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
+                self.m1_pulsewidth = self.m1_pulsewidth + 100
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         elif x < 0:
-            if self.m1_duty_cycle > MOTOR_PWM_DUTY_CYCLE_0:
-                self.m1_duty_cycle = self.m1_duty_cycle - 100
-                t_m1 = threading.Thread(target=self.move, args=(GPIO_MOTOR1, self.m1_duty_cycle))
+            if self.m1_pulsewidth > MOTOR_PULSEWIDTH_MID:
+                self.m1_pulsewidth = self.m1_pulsewidth - 100
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         
         if y > 0:
-            if self.m2_duty_cycle < MOTOR_PWM_DUTY_CYCLE_180:
-                self.m2_duty_cycle = self.m2_duty_cycle + 100
-                t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
+            if self.m2_pulsewidth < MOTOR_PULSEWIDTH_MAX:
+                self.m2_pulsewidth = self.m2_pulsewidth + 100
+                t_m2 = threading.Thread(target=self.__move, args=(GPIO_MOTOR2, self.m2_pulsewidth))
         elif y < 0:
-            if self.m2_duty_cycle > MOTOR_PWM_DUTY_CYCLE_0:
-                self.m2_duty_cycle = self.m2_duty_cycle - 100
-                t_m2 = threading.Thread(target=self.move, args=(GPIO_MOTOR2, self.m2_duty_cycle))
+            if self.m2_pulsewidth > MOTOR_PULSEWIDTH_MID:
+                self.m2_pulsewidth = self.m2_pulsewidth - 100
+                t_m2 = threading.Thread(target=self.__move, args=(GPIO_MOTOR2, self.m2_pulsewidth))
 
         # starting thread (controlling motor)
         t_m1.start()
@@ -158,8 +169,8 @@ class Turret(object):
         t_m1.join()
         t_m2.join()
     
-    def move(self, motor, duty_cycle):
-        self.pi.hardware_PWM(motor, MOTOR_PWM_FREQUENCY, duty_cycle)
+    def __move(self, motor, puslewidth):
+        self.pi.set_servo_pulsewidth(motor, puslewidth)
 
 
     # start thermal detection
@@ -170,8 +181,7 @@ class Turret(object):
         h, w = frame.shape[:2]
 
     def __turn_of_motors(self):
-        self.pi.hardware_PWM(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY, 60000)
-        self.pi.hardware_PWM(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY, 60000)
+        self.calibrate()
         self.pi.write(GPIO_MOTOR1, 0)
         self.pi.write(GPIO_MOTOR2, 0)
         self.pi.stop()
