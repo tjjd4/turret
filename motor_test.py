@@ -10,7 +10,7 @@ MOTOR_MAX_FREQUENCY = 120000
 MOTOR_MIN_FREQUENCY = 25000
 
 MIN_PULSEWIDTH = 1000
-MAX_PULSEWIDTH = 1900
+MAX_PULSEWIDTH = 2000
 
 
 '''
@@ -23,17 +23,17 @@ pi = pigpio.pi('192.168.0.118')
 pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
 
 # print(pi.get_servo_pulsewidth(6))
-print("frequency at 20000")
-pi.set_servo_pulsewidth(12, 1500)
+print("pulsewidth at 2000")
+pi.set_servo_pulsewidth(12, 2000)
 time.sleep(5)
 
-initial_pulsewidth = 500
+initial_pulsewidth = 1000
 for i in range(21):
     print( "working at:" + str(initial_pulsewidth))
     pi.set_servo_pulsewidth(12, initial_pulsewidth)
     print(pi.get_servo_pulsewidth(12))
-    time.sleep(3)
-    initial_pulsewidth += 100
+    time.sleep(1)
+    initial_pulsewidth += 50
     try:
         print(pi.get_servo_pulsewidth(6))
     except:

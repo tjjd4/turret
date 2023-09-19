@@ -44,7 +44,7 @@ Position Sensor	        Potentiometer
 
 MOTOR_PULSEWIDTH_MIN = 1000
 MOTOR_PULSEWIDTH_MID = 1500
-MOTOR_PULSEWIDTH_MAX = 1900
+MOTOR_PULSEWIDTH_MAX = 2000
 
 # not using pi.hardware_PWM() to control the motor, using pi.set_servo_pulsewidth() instead.
 # 
@@ -70,8 +70,6 @@ Product Weight: 3.0g / 0.1oz
 IMAGE_CENTER_POINT_X = 15
 IMAGE_CENTER_POINT_Y = 11
 
-
-TEMP_RANGE = (30, 40)
 
 class VideoUtils(object):
     '''
@@ -107,14 +105,14 @@ class VideoUtils(object):
 
     @staticmethod
     def find_centroid_difference(thresholded_matrix):
-        central_point = (15, 11)
+        
         y_positions, x_positions = np.where(thresholded_matrix == 255)
         if len(x_positions) == 0 or len(y_positions) == 0:
             return None, (0, 0)
         centroid_x = int(np.mean(x_positions))
         centroid_y = int(np.mean(y_positions))
-        difference_x = centroid_x - central_point[0]
-        difference_y = centroid_y - central_point[1]
+        difference_x = centroid_x - IMAGE_CENTER_POINT_X
+        difference_y = centroid_y - IMAGE_CENTER_POINT_Y
         return (centroid_x, centroid_y), (difference_x, difference_y)
 
     @staticmethod
@@ -174,9 +172,11 @@ class Turret(object):
     Class used for turret control
     control a turret with two servo motor
     '''
-    def __init__(self):
+    def __init__(self, temp_range = (30, 40)):
         logging.getLogger().setLevel(logging.DEBUG)
         logging.info('Turret Start initialize')
+
+        self.temp_range = temp_range
 
         # initialize raspberry pi connection
         self.pi = pigpio.pi()
@@ -209,20 +209,20 @@ class Turret(object):
         
         if x > 0:
             if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
-                self.m1_pulsewidth = self.m1_pulsewidth + 100
+                self.m1_pulsewidth = self.m1_pulsewidth + 25
                 t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         elif x < 0:
             if self.m1_pulsewidth > MOTOR_PULSEWIDTH_MID:
-                self.m1_pulsewidth = self.m1_pulsewidth - 100
+                self.m1_pulsewidth = self.m1_pulsewidth - 25
                 t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         
         if y > 0:
             if self.m2_pulsewidth < MOTOR_PULSEWIDTH_MAX:
-                self.m2_pulsewidth = self.m2_pulsewidth + 100
+                self.m2_pulsewidth = self.m2_pulsewidth + 25
                 t_m2 = threading.Thread(target=self.__move, args=(GPIO_MOTOR2, self.m2_pulsewidth))
         elif y < 0:
             if self.m2_pulsewidth > MOTOR_PULSEWIDTH_MID:
-                self.m2_pulsewidth = self.m2_pulsewidth - 100
+                self.m2_pulsewidth = self.m2_pulsewidth - 25
                 t_m2 = threading.Thread(target=self.__move, args=(GPIO_MOTOR2, self.m2_pulsewidth))
 
         # starting thread (controlling motor)
@@ -250,6 +250,26 @@ class Turret(object):
 
 if __name__ == '__main__':
 
-    t = Turret()
-    t.calibrate()
-    t.thermal_tracking()
+    user_input = input("Choose an mode: (1) Thermal Tracking (2) Customize Setting \n")
+    if str(user_input) == "1":
+        t = Turret()
+        t.calibrate()
+        t.thermal_tracking()
+    elif str(user_input) == "2":
+        low_temp = input("Setting: detect temp range from ? (Type the lowest temperture be detected)\n")
+        try:
+            low = int(low_temp)
+        except:
+            print("Invalid input. Please enter a valid integer.")
+            exit(1)
+        high_temp = input(f"Setting: detect temp range from {low} to ? (Type the highest temperture be detected)\n")
+        try:
+            high = int(high_temp)
+        except:
+            print("Invalid input. Please enter a valid integer.")
+            exit(1)
+        if low > high:
+            print("Invalid input. From 'low' to 'high'.")
+    else:
+        print("Unknown input mode. Please choose a number (1) or (2)")
+
