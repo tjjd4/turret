@@ -1,7 +1,7 @@
 import cv2
 import sys
 import time
-import board
+# import board
 import busio
 import atexit
 import threading
@@ -189,7 +189,7 @@ class Turret(object):
 
 
         # set to relocate and release the motors
-        atexit.register(self.__turn_of_motors)
+        atexit.register(self.__turn_off_motors)
         logging.info('Turret Initialize sucess')
 
     # calibrate two servo motors to central position
@@ -242,7 +242,7 @@ class Turret(object):
         VideoUtils.thermal_detection(self.track, self.temp_range)
     
 
-    def __turn_of_motors(self):
+    def __turn_off_motors(self):
         self.calibrate()
         self.pi.write(GPIO_MOTOR1, 0)
         self.pi.write(GPIO_MOTOR2, 0)
