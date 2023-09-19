@@ -1,5 +1,6 @@
 import cv2
 import sys
+import time
 import board
 import busio
 import atexit
@@ -70,40 +71,100 @@ IMAGE_CENTER_POINT_X = 15
 IMAGE_CENTER_POINT_Y = 11
 
 
+TEMP_RANGE = (30, 40)
+
 class VideoUtils(object):
     '''
     Class used for video processing
     '''
     @staticmethod
-    def trackHeat():
-        i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
-
+    def init_mlx90640():
+        i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
         mlx = adafruit_mlx90640.MLX90640(i2c)
-        print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
+        mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
+        logging.debug("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
+        return mlx
+    
+    @staticmethod
+    def process_frame(frame):
+        thermal_matrix = np.array(frame).reshape(24, 32)
+        blurred_matrix = cv2.GaussianBlur(thermal_matrix, (5, 5), 0)
+        _, thresholded_matrix = cv2.threshold(blurred_matrix, TEMP_RANGE[0], TEMP_RANGE[1], cv2.THRESH_BINARY)
+        thresholded_matrix = thresholded_matrix.astype(np.uint8) * 255
+        contours, _ = cv2.findContours(thresholded_matrix, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if len(contours) == 0:
+            return np.zeros_like(thresholded_matrix), 0
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)
+        largest_region = np.zeros_like(thresholded_matrix)
+        cv2.drawContours(largest_region, [contours[0]], 0, 255, thickness=cv2.FILLED)
+        return largest_region, thermal_matrix.max()
 
-        # if using higher refresh rates yields a 'too many retries' exception,
-        # try decreasing this value to work with certain pi/camera combinations
-        mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+    @staticmethod
+    def print_results(thresholded_matrix, highest_temp):
+        for row in thresholded_matrix:
+            print(", ".join(["%d" % (value//255) for value in row]))
+        print("_______")
 
+    @staticmethod
+    def find_centroid_difference(thresholded_matrix):
+        central_point = (15, 11)
+        y_positions, x_positions = np.where(thresholded_matrix == 255)
+        if len(x_positions) == 0 or len(y_positions) == 0:
+            return None, (0, 0)
+        centroid_x = int(np.mean(x_positions))
+        centroid_y = int(np.mean(y_positions))
+        difference_x = centroid_x - central_point[0]
+        difference_y = centroid_y - central_point[1]
+        return (centroid_x, centroid_y), (difference_x, difference_y)
+
+    @staticmethod
+    def thermal_detection(callback):
+        mlx = VideoUtils.init_mlx90640()
         frame = [0] * 768
-        while True:
-            try:
-                mlx.getFrame(frame)
-            except ValueError:
-                # these happen, no biggie - retry
-                continue
+        frame_interval = 1.0 / 16
+        program_time = time.time()
+        frame_count = 0
+        restart_count = 0
+        try:
+            while True:
+                try:
+                    logging.debug("start new frame")
+                    start_time = time.time()
+                    mlx.getFrame(frame)
+                    image_time = time.time()
 
-            thermal_matrix =np.array(frame).reshape(24, 32)
-            highest_temp = thermal_matrix.max()
-            thermal_matrix[thermal_matrix != highest_temp] = 0
+                    thresholded_matrix, highest_temp = VideoUtils.process_frame(frame)
+                    centroid, difference_to_center = VideoUtils.find_centroid_difference(thresholded_matrix)
 
-            for h in range(24):
-                for w in range(32):
-                    t = frame[h*32 + w]
-                    print("%0.1f, " % t, end="")
-                print()
-            print()
 
+                    if centroid:
+                        logging.debug(f'Difference from the most central point: {difference_to_center}')
+                        callback(centroid, difference_to_center)
+
+                    elapsed_time = time.time() - start_time
+                    logging.debug("--- total %s seconds ---" % (time.time() - start_time))
+                    logging.debug("--- read image time %s seconds ---" % (image_time - start_time))
+                    logging.debug("--- image process %s seconds ---" % (time.time() - image_time))
+                    frame_count += 1
+
+                    if elapsed_time < frame_interval:
+                        logging.info("Sleeping for : %s" % (frame_interval - elapsed_time))
+                        time.sleep(frame_interval - elapsed_time)
+                except:
+                    logging.warning('Error reading frame')
+                    restart_count += 1
+                    continue
+        except RuntimeError:
+            logging.warning("tooooooooooooooooo  many  retries")
+            logging.info("detection time : %s" % (time.time() - program_time))
+            logging.info('Total frames count: '+str(frame_count))
+            logging.info("Restart Count : %s" % restart_count)
+        except KeyboardInterrupt:
+            logging.debug("Key Board Interrupt")
+            logging.info("detection time : %s" % (time.time() - program_time))
+            logging.info('Total frames count: '+str(frame_count))
+            logging.info("Restart Count : %s" % restart_count)
+            raise KeyboardInterrupt
 
 
 
@@ -116,6 +177,8 @@ class Turret(object):
     def __init__(self):
         logging.getLogger().setLevel(logging.DEBUG)
         logging.info('Turret Start initialize')
+
+        # initialize raspberry pi connection
         self.pi = pigpio.pi()
         self.pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
         self.pi.set_mode(GPIO_MOTOR2, pigpio.OUTPUT)
@@ -123,6 +186,7 @@ class Turret(object):
         # self.pi.set_PWM_range(GPIO_MOTOR1, MOTOR_PWM_RANGE)
         # self.pi.set_PWM_frequency(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY)
         # self.pi.set_PWM_range(GPIO_MOTOR2, MOTOR_PWM_RANGE)
+
 
         # set to relocate and release the motors
         atexit.register(self.__turn_of_motors)
@@ -174,11 +238,9 @@ class Turret(object):
 
 
     # start thermal detection
-    def thermal_detection(self):
-        return
+    def thermal_tracking(self):
+        VideoUtils.thermal_detection(self.track)
     
-    def move(self, frame):
-        h, w = frame.shape[:2]
 
     def __turn_of_motors(self):
         self.calibrate()
@@ -188,8 +250,6 @@ class Turret(object):
 
 if __name__ == '__main__':
 
-    print('program activate')
-    print('-----------------')
     t = Turret()
     t.calibrate()
-    t.thermal_detection()
+    t.thermal_tracking()
