@@ -48,6 +48,13 @@ Thermal Camera: [MLX90640-BAA IR Thermal Camera](https://twarm.com/commerce/prod
   ```bash
   pipenv lock -r > requirements.txt
   ```
+  ### Error installing opencv-python
+  Sometime opencv-python couldn't be installed on Raspberry Pi. The installation will stuck in likely the last step, pending something forever.
+  In this case, you may install the older version of opencv-python.
+  e.g.:
+  ```bash
+  pip install opencv-python==4.4.0.46
+  ```
   ### Adafruit_CircuitPython_MLX90640
   **Original Repository** : [Adafruit_CircuitPython_MLX90640](https://github.com/adafruit/Adafruit_CircuitPython_MLX90640.git)
   
