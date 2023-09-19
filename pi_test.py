@@ -41,59 +41,72 @@ def find_centroid_difference(thresholded_matrix):
     difference_y = centroid_y - central_point[1]
     return (centroid_x, centroid_y), (difference_x, difference_y)
 
-def thermal_detection_modified(show_video=False):
+def print_temperature(frame):
+    thermal_matrix = np.array(frame).reshape(24,32)
+    for row in thermal_matrix:
+        print(', '.join(map(lambda x: str(int(x)), row)))
+    print('________')
+
+def print_highest_temperature_matrix(frame):
+    thermal_matrix = np.array(frame).reshape(24, 32)
+    max_temp = thermal_matrix.max()
+    y, x = np.where(thermal_matrix == max_temp)
+    
+    # Reset all values to zero
+    thermal_matrix[:] = 0
+    
+    if len(x) > 0 and len(y) > 0:
+        thermal_matrix[y[0], x[0]] = max_temp
+        
+    for row in thermal_matrix:
+        print(', '.join(map(lambda x: str(int(x)), row)))
+    print('________')
+
+def thermal_detection_modified():
     mlx = init_mlx_sensor()
     frame = [0] * 768
     frame_interval = 1.0 / 16
-    program_time = time.time()
-    count = 0
+
+    # Prompt user input only once at the start
+    user_input = input("Press 't' to display temperature, 'q' to find centroid difference, or 'h' to show the highest temperature point: ")
+    show_temperature = True if user_input == 't' else False
+    show_highest_temp = True if user_input == 'h' else False
+
     try:
         while True:
-            try:
-                start_time = time.time()
-                print("start next frame")
-                mlx.getFrame(frame)
-                print("frame get")
-                read_end_time = time.time()
-                image_time = time.time()
-                thresholded_matrix, highest_temp = process_frame(frame)
+            start_time = time.time()
+            print("start next frame")
+            mlx.getFrame(frame)
+            print("frame get")
+
+            # If user chose to show temperature
+            if show_temperature:
+                print_temperature(frame)
+            elif show_highest_temp:
+                print_highest_temperature_matrix(frame)
+            else:
+                thresholded_matrix, _ = process_frame(frame)
                 centroid, difference_to_center = find_centroid_difference(thresholded_matrix)
                 if centroid:
                     print(f'Centroid of temperature in range: {centroid}')
                     print(f'Difference from the most central point: {difference_to_center}')
                 else:
                     print('No Centroid found')
-                print_results(thresholded_matrix, highest_temp)
-                elapsed_time = time.time() - start_time
-                print("--- total %s seconds ---" % (time.time() - start_time))
-                print("--- read image time %s seconds ---" % (read_end_time - start_time))
-                print("--- image process %s seconds ---" % (time.time() - image_time))
-                count += 1
-                if show_video:
-                    '''
-                    heatmap = cv2.applyColorMap(frame, cv2.COLORMAP_HOT)
-                    
-                    
-                    cv2.imshow('heatmap', heatmap)
-                    key = cv2.waitKey(1) & 0xFF
-                    if key == ord("q"):
-                        break
-                    '''
-                    pass
-                if elapsed_time < frame_interval:
-                    print("Sleeping for : %s" % (frame_interval - elapsed_time))
-                    time.sleep(frame_interval - elapsed_time)
-            except ValueError:
-                print('Error reading frame')
-                continue       
+                print_results(thresholded_matrix, _)
+
+            elapsed_time = time.time() - start_time
+            print("--- total %s seconds ---" % (time.time() - start_time))
+
+            if elapsed_time < frame_interval:
+                print("Sleeping for : %s" % (frame_interval - elapsed_time))
+                time.sleep(frame_interval - elapsed_time)
+                
+    except ValueError:
+        print('Error reading frame')
     except RuntimeError:
-        print("tooooooooooooooooo  many  retries")
-        print("program time : %s" % (time.time() - program_time))
-        print('Total frames count: '+str(count))
+        print("Too many retries")
     except KeyboardInterrupt:
-        print("Key Board Interrupt")
-        print("program time : %s" % (time.time() - program_time))
-        print('Total frames count: '+str(count))
+        print("Keyboard Interrupt")
         raise KeyboardInterrupt
 
 if __name__ == "__main__":
@@ -101,11 +114,11 @@ if __name__ == "__main__":
     count = 0
     while True:
         try:
-            thermal_detection_modified(show_video=True)
+            thermal_detection_modified()
         except Exception as e:
             pass
         except KeyboardInterrupt:
-            print("program end")
+            print("Program end")
             print("Restart Count : %s" % count)
             break
-        count+=1
+        count += 1
