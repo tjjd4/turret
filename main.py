@@ -1,7 +1,7 @@
 import cv2
 import sys
 import time
-# import board
+import board
 import busio
 import atexit
 import threading
