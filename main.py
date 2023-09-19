@@ -84,10 +84,10 @@ class VideoUtils(object):
         return mlx
     
     @staticmethod
-    def process_frame(frame):
+    def process_frame(frame, temp_range):
         thermal_matrix = np.array(frame).reshape(24, 32)
         blurred_matrix = cv2.GaussianBlur(thermal_matrix, (5, 5), 0)
-        _, thresholded_matrix = cv2.threshold(blurred_matrix, TEMP_RANGE[0], TEMP_RANGE[1], cv2.THRESH_BINARY)
+        _, thresholded_matrix = cv2.threshold(blurred_matrix, temp_range[0], temp_range[1], cv2.THRESH_BINARY)
         thresholded_matrix = thresholded_matrix.astype(np.uint8) * 255
         contours, _ = cv2.findContours(thresholded_matrix, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) == 0:
@@ -116,7 +116,7 @@ class VideoUtils(object):
         return (centroid_x, centroid_y), (difference_x, difference_y)
 
     @staticmethod
-    def thermal_detection(callback):
+    def thermal_detection(callback, temp_range):
         mlx = VideoUtils.init_mlx90640()
         frame = [0] * 768
         frame_interval = 1.0 / 16
@@ -131,7 +131,7 @@ class VideoUtils(object):
                     mlx.getFrame(frame)
                     image_time = time.time()
 
-                    thresholded_matrix, highest_temp = VideoUtils.process_frame(frame)
+                    thresholded_matrix, highest_temp = VideoUtils.process_frame(frame, temp_range)
                     centroid, difference_to_center = VideoUtils.find_centroid_difference(thresholded_matrix)
 
 
@@ -239,7 +239,7 @@ class Turret(object):
 
     # start thermal detection
     def thermal_tracking(self):
-        VideoUtils.thermal_detection(self.track)
+        VideoUtils.thermal_detection(self.track, self.temp_range)
     
 
     def __turn_of_motors(self):
@@ -268,8 +268,14 @@ if __name__ == '__main__':
         except:
             print("Invalid input. Please enter a valid integer.")
             exit(1)
-        if low > high:
+        if low >= high:
             print("Invalid input. From 'low' to 'high'.")
+            exit(1)
+        else:
+            t = Turret((low, high))
+            t.calibrate()
+            t.thermal_tracking()
+
     else:
         print("Unknown input mode. Please choose a number (1) or (2)")
 
