@@ -4,7 +4,7 @@ import logging
 import pigpio
 import numpy as np
 import adafruit_mlx90640
-from videoUtils import VideoUtils
+from src.videoUtils import VideoUtils
 
 '''
 Raspberry Pi 4 Model B

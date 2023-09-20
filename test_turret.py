@@ -1,6 +1,6 @@
 import unittest
-from main import Turret, VideoUtils
-from main import GPIO_MOTOR1, GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID
+from src.turret import Turret
+from src.turret import GPIO_MOTOR1, GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID
 
 class TurretTestCase(unittest.TestCase):
     def test_init(self):

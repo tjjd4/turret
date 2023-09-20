@@ -1,16 +1,16 @@
 import pigpio
+import threading
 import time
 
 GPIO_MOTOR1 = 12
 GPIO_MOTOR2 = 13
-GPIO_MOTOR1_FEEDBACK = 18
 
 MOTOR_PWM_FREQUENCY = 50
 MOTOR_MAX_FREQUENCY = 120000
 MOTOR_MIN_FREQUENCY = 25000
 
-MIN_PULSEWIDTH = 1000
-MAX_PULSEWIDTH = 2000
+MIN_PULSEWIDTH = 1200
+MAX_PULSEWIDTH = 1800
 
 
 '''
@@ -21,24 +21,76 @@ and get_servo_pulsewidth to get pulsewidth passing to motor.
 print("start")
 pi = pigpio.pi()
 pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
+pi.set_mode(GPIO_MOTOR2, pigpio.OUTPUT)
 
-# initial_pulsewidth = 1000
-# for i in range(21):
-#     print( "working at:" + str(initial_pulsewidth))
-#     pi.set_servo_pulsewidth(12, initial_pulsewidth)
-#     print(pi.get_servo_pulsewidth(12))
-#     time.sleep(1)
-#     initial_pulsewidth += 50
-#     try:
-#         print(pi.get_servo_pulsewidth(6))
-#     except:
-#         continue
 print("pulsewidth at 1500")
-pi.set_servo_pulsewidth(12, 1500)
+pi.set_servo_pulsewidth(GPIO_MOTOR1, 1500)
+pi.set_servo_pulsewidth(GPIO_MOTOR2, 1500)
 time.sleep(3)
 
+def move(motor, pulsewidth):
+    pi.set_servo_pulsewidth(motor, pulsewidth)
+
+def move_with_sleep(motor, pulsewidth):
+    pi.set_servo_pulsewidth(motor, pulsewidth)
+    time.sleep(0.3)
+
+
+time.sleep(3)
+print('--- move no sleep ---')
+
 for i in range(4):
-    pi.set_servo_pulsewidth(12, 1500 + i * 100)
+    
+    print("moving to: %s" % (1500 + i * 100))
+    start_time = time.time()
+    move(GPIO_MOTOR1, 1500 + i * 100)
+    move(GPIO_MOTOR2, 1500 + i * 100)
+    print("total time: %s" % (time.time() - start_time()))
+
+
+time.sleep(3)
+print('--- move with sleep ---')
+
+for i in range(4):
+    
+    print("moving to: %s" % (1500 + i * 100))
+    start_time = time.time()
+    move_with_sleep(GPIO_MOTOR1, 1500 + i * 100)
+    move_with_sleep(GPIO_MOTOR2, 1500 + i * 100)
+    print("total time: %s" % (time.time() - start_time()))
+
+
+time.sleep(3)
+print('--- move with thread ---')
+
+for i in range(4):
+    
+    t_m1 = threading.Thread(target=move, args=(GPIO_MOTOR1, (1500 + i * 100)))
+    t_m2 = threading.Thread(target=move, args=(GPIO_MOTOR2, (1500 + i * 100)))
+    print("moving to: %s" % (1500 + i * 100))
+    start_time = time.time()
+    t_m1.start()
+    t_m2.start()
+    t_m1.join()
+    t_m2.join()
+    print("total time: %s" % (time.time() - start_time()))
+
+time.sleep(3)
+print('--- move with sleep with thread ---')
+
+for i in range(4):
+    
+    t_m1 = threading.Thread(target=move_with_sleep, args=(GPIO_MOTOR1, (1500 + i * 100)))
+    t_m2 = threading.Thread(target=move_with_sleep, args=(GPIO_MOTOR2, (1500 + i * 100)))
+    print("moving to: %s" % (1500 + i * 100))
+    start_time = time.time()
+    t_m1.start()
+    t_m2.start()
+    t_m1.join()
+    t_m2.join()
+    print("total time: %s" % (time.time() - start_time()))
+
+
 pi.write(GPIO_MOTOR1, 0)
 pi.write(GPIO_MOTOR2, 0)
 pi.stop()

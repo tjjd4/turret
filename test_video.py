@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from main import VideoUtils
+from src.videoUtils import VideoUtils
 try:
     import board
     import busio

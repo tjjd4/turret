@@ -1,10 +1,10 @@
-import logging
-from turret import Turret
-
 if __name__ == '__main__':
+    import logging
+    from src.turret import Turret
 
     user_input = input("Choose an mode: (1) Thermal Tracking (2) Customize Setting \n")
     if str(user_input) == "1":
+        logging.getLogger().setLevel(logging.WARNING)
         t = Turret()
         t.calibrate()
         t.thermal_tracking()
