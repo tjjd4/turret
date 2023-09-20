@@ -38,7 +38,7 @@ time.sleep(5)
 #         print(pi.get_servo_pulsewidth(6))
 #     except:
 #         continue
-pi.set_servo_pulsewidth(12, 1400)
+pi.set_servo_pulsewidth(12, 1500)
 
 pi.write(GPIO_MOTOR1, 0)
 pi.write(GPIO_MOTOR2, 0)
