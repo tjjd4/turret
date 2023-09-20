@@ -88,7 +88,7 @@ class VideoUtils(object):
 
                     if centroid:
                         logging.debug(f'Difference from the most central point: {difference_to_center}')
-                        callback(centroid, difference_to_center)
+                        callback(difference_to_center[0], difference_to_center[1])
 
                     elapsed_time = time.time() - start_time
                     logging.debug("--- total %s seconds ---" % (time.time() - start_time))
