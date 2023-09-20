@@ -108,9 +108,10 @@ class VideoUtils(object):
             logging.info("detection time : %s" % (time.time() - program_time))
             logging.info('Total frames count: '+str(frame_count))
             logging.info("Restart Count : %s" % restart_count)
+            exit(1)
         except KeyboardInterrupt:
             logging.debug("Key Board Interrupt")
             logging.info("detection time : %s" % (time.time() - program_time))
             logging.info('Total frames count: '+str(frame_count))
             logging.info("Restart Count : %s" % restart_count)
-            raise KeyboardInterrupt
+            exit(0)
