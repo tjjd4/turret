@@ -99,10 +99,13 @@ class VideoUtils(object):
                     if elapsed_time < frame_interval:
                         logging.info("Sleeping for : %s" % (frame_interval - elapsed_time))
                         time.sleep(frame_interval - elapsed_time)
-                except:
+                except ValueError:
                     logging.warning('Error reading frame')
                     restart_count += 1
                     continue
+                except KeyboardInterrupt:
+                    raise KeyboardInterrupt
+                    
         except RuntimeError:
             logging.warning("tooooooooooooooooo  many  retries")
             logging.info("detection time : %s" % (time.time() - program_time))
