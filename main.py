@@ -1,3 +1,4 @@
+import logging
 from turret import Turret
 
 if __name__ == '__main__':
@@ -23,10 +24,21 @@ if __name__ == '__main__':
         if low >= high:
             print("Invalid input. From 'low' to 'high'.")
             exit(1)
-        else:
-            t = Turret((low, high))
-            t.calibrate()
-            t.thermal_tracking()
+        
+
+        log_level = input("Logger level: (1) debug (2) info\n")
+
+        try:
+            level = int(log_level)
+            if level == 1:
+                logging.getLogger().setLevel(logging.DEBUG)
+            elif level == 2:
+                logging.getLogger().setLevel(logging.INFO)
+
+        except:
+            print("Invalid input. Please enter a valid integer.")
+            exit(1)
+        
 
     else:
         print("Unknown input mode. Please choose a number (1) or (2)")

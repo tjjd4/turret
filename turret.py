@@ -56,7 +56,6 @@ class Turret(object):
     control a turret with two servo motor
     '''
     def __init__(self, temp_range = (30, 40)):
-        logging.getLogger().setLevel(logging.DEBUG)
         logging.info('Turret Start initialize')
 
         self.temp_range = temp_range
@@ -117,6 +116,7 @@ class Turret(object):
         t_m2.join()
     
     def __move(self, motor, puslewidth):
+        logging.debug("-------------move---------------")
         self.pi.set_servo_pulsewidth(motor, puslewidth)
 
 
