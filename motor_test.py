@@ -19,13 +19,13 @@ and get_servo_pulsewidth to get pulsewidth passing to motor.
 '''
 
 print("start")
-pi = pigpio.pi('192.168.0.118')
+pi = pigpio.pi()
 pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
 
 # print(pi.get_servo_pulsewidth(6))
 print("pulsewidth at 2000")
 pi.set_servo_pulsewidth(12, 2000)
-time.sleep(5)
+time.sleep(3)
 
 # initial_pulsewidth = 1000
 # for i in range(21):
@@ -38,7 +38,9 @@ time.sleep(5)
 #         print(pi.get_servo_pulsewidth(6))
 #     except:
 #         continue
+print("pulsewidth at 1500")
 pi.set_servo_pulsewidth(12, 1500)
+time.sleep(3)
 
 pi.write(GPIO_MOTOR1, 0)
 pi.write(GPIO_MOTOR2, 0)
