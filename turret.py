@@ -38,9 +38,9 @@ Position Sensor	        Potentiometer
 # using set_servo_pulsewidth to move to certain angle,
 # and get_servo_pulsewidth to get the signal pulsewidth passing to motor.
 
-MOTOR_PULSEWIDTH_MIN = 1000
+MOTOR_PULSEWIDTH_MIN = 1200
 MOTOR_PULSEWIDTH_MID = 1500
-MOTOR_PULSEWIDTH_MAX = 2000
+MOTOR_PULSEWIDTH_MAX = 1800
 
 # not using pi.hardware_PWM() to control the motor, using pi.set_servo_pulsewidth() instead.
 # 
