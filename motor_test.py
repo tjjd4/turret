@@ -22,11 +22,6 @@ print("start")
 pi = pigpio.pi()
 pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
 
-# print(pi.get_servo_pulsewidth(6))
-print("pulsewidth at 2000")
-pi.set_servo_pulsewidth(12, 2000)
-time.sleep(3)
-
 # initial_pulsewidth = 1000
 # for i in range(21):
 #     print( "working at:" + str(initial_pulsewidth))
@@ -42,6 +37,8 @@ print("pulsewidth at 1500")
 pi.set_servo_pulsewidth(12, 1500)
 time.sleep(3)
 
+for i in range(4):
+    pi.set_servo_pulsewidth(12, 1500 + i * 100)
 pi.write(GPIO_MOTOR1, 0)
 pi.write(GPIO_MOTOR2, 0)
 pi.stop()
