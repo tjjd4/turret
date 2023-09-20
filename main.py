@@ -39,6 +39,9 @@ if __name__ == '__main__':
             print("Invalid input. Please enter a valid integer.")
             exit(1)
         
+        t = Turret((low, high))
+        t.calibrate()
+        t.thermal_tracking()
 
     else:
         print("Unknown input mode. Please choose a number (1) or (2)")
