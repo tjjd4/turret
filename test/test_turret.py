@@ -33,6 +33,12 @@ class TurretTestCase(unittest.TestCase):
         t.track(-1, -1)
         self.assertEqual(t.m1_pulsewidth, MOTOR_PULSEWIDTH_MID)
         self.assertEqual(t.m2_pulsewidth, MOTOR_PULSEWIDTH_MID)
+        t.track(1, -1)
+        self.assertEqual(t.m1_pulsewidth, MOTOR_PULSEWIDTH_MID + 25)
+        self.assertEqual(t.m2_pulsewidth, MOTOR_PULSEWIDTH_MID - 25)
+        t.track(-1, 1)
+        self.assertEqual(t.m1_pulsewidth, MOTOR_PULSEWIDTH_MID)
+        self.assertEqual(t.m2_pulsewidth, MOTOR_PULSEWIDTH_MID)
 
     def test___move(self):
         t = Turret()
