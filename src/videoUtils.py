@@ -1,6 +1,10 @@
 import cv2
 import time
-import board
+try:
+    import board
+    # ... other hardware-specific imports
+except (ImportError, NotImplementedError):
+    pass
 import busio
 import logging
 import numpy as np
