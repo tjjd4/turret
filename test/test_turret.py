@@ -52,10 +52,10 @@ class TurretTestCase(unittest.TestCase):
         t = Turret()
         t.calibrate()
         t._Turret__turn_off_motors()
-        with self.assertRaises():
+        with self.assertRaises(Exception):
             t.pi.get_servo_pulsewidth(GPIO_MOTOR1)
 
-        with self.assertRaises():
+        with self.assertRaises(Exception):
             t.pi.get_servo_pulsewidth(GPIO_MOTOR2)
 
     def setUp(self):
