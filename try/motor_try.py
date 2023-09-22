@@ -45,7 +45,7 @@ for i in range(4):
     start_time = time.time()
     move(GPIO_MOTOR1, 1500 + i * 100)
     move(GPIO_MOTOR2, 1500 + i * 100)
-    print("total time: %s" % (time.time() - start_time()))
+    print("total time: %s" % (time.time() - start_time))
 
 
 time.sleep(3)
