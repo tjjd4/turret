@@ -35,7 +35,7 @@ class VideoUtils(object):
     def init_mlx90640():
         mlx = VideoUtils.get_mlx90640()
         mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
-        print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
+        logging.debug("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
         return mlx
     
     @staticmethod
@@ -48,7 +48,7 @@ class VideoUtils(object):
     def process_frame(frame, temp_range):
         thermal_matrix = np.array(frame, dtype=np.float32).reshape(24, 32)
         blurred_matrix = cv2.GaussianBlur(thermal_matrix, (5, 5), 0)
-        mask = (blurred_matrix > temp_range[0]& (blurred_matrix < temp_range[1]))
+        mask = ((blurred_matrix > temp_range[0]) & (blurred_matrix < temp_range[1]))
         thresholded_matrix = mask.astype(np.uint8) * 255
         contours, _ = cv2.findContours(thresholded_matrix, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) == 0:
