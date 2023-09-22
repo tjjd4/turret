@@ -35,7 +35,7 @@ class VideoUtils(object):
     def init_mlx90640():
         mlx = VideoUtils.get_mlx90640()
         mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
-        logging.debug("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
+        print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
         return mlx
     
     @staticmethod
