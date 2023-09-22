@@ -73,6 +73,9 @@ for i in range(4):
     t_m2.start()
     t_m1.join()
     t_m2.join()
+    print("position")
+    print(pi.get_servo_pulsewidth(12))
+    print(pi.get_servo_pulsewidth(13))
     print("total time: %s" % (time.time() - start_time))
 
 time.sleep(3)
@@ -88,6 +91,9 @@ for i in range(4):
     t_m2.start()
     t_m1.join()
     t_m2.join()
+    print("position")
+    print(pi.get_servo_pulsewidth(12))
+    print(pi.get_servo_pulsewidth(13))
     print("total time: %s" % (time.time() - start_time))
 
 
