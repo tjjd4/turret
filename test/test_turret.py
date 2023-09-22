@@ -43,15 +43,15 @@ class TurretTestCase(unittest.TestCase):
     def test___move(self):
         t = Turret()
         t.calibrate()
-        t.__move(GPIO_MOTOR1, MOTOR_PULSEWIDTH_MID + 25)
+        t._Turret__move(GPIO_MOTOR1, MOTOR_PULSEWIDTH_MID + 25)
         self.assertEqual(t.pi.get_servo_pulsewidth(GPIO_MOTOR1), MOTOR_PULSEWIDTH_MID + 25)
-        t.__move(GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID - 25)
+        t._Turret__move(GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID - 25)
         self.assertEqual(t.pi.get_servo_pulsewidth(GPIO_MOTOR2), MOTOR_PULSEWIDTH_MID - 25)
 
     def test___turn_off_motors(self):
         t = Turret()
         t.calibrate()
-        t.__turn_off_motors()
+        t._Turret__turn_off_motors()
         with self.assertRaises():
             t.pi.get_servo_pulsewidth(GPIO_MOTOR1)
 
