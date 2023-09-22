@@ -1,11 +1,12 @@
 import cv2
 import time
 try:
+    import busio
     import board
     # ... other hardware-specific imports
 except (ImportError, NotImplementedError):
     pass
-import busio
+
 import logging
 import numpy as np
 import adafruit_mlx90640
@@ -32,15 +33,20 @@ class VideoUtils(object):
     '''
     @staticmethod
     def init_mlx90640():
-        i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
-        mlx = adafruit_mlx90640.MLX90640(i2c)
+        mlx = VideoUtils.get_mlx90640()
         mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
         logging.debug("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
         return mlx
     
     @staticmethod
+    def get_mlx90640():
+        i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
+        mlx = adafruit_mlx90640.MLX90640(i2c)
+        return mlx
+    
+    @staticmethod
     def process_frame(frame, temp_range):
-        thermal_matrix = np.array(frame).reshape(24, 32)
+        thermal_matrix = np.array(frame, dtype=np.int8).reshape(24, 32)
         blurred_matrix = cv2.GaussianBlur(thermal_matrix, (5, 5), 0)
         _, thresholded_matrix = cv2.threshold(blurred_matrix, temp_range[0], temp_range[1], cv2.THRESH_BINARY)
         thresholded_matrix = thresholded_matrix.astype(np.uint8) * 255
@@ -122,3 +128,7 @@ class VideoUtils(object):
             logging.info('Total frames count: '+str(frame_count))
             logging.info("Restart Count : %s" % restart_count)
             exit(0)
+
+if __name__ == '__main__':
+    frame = np.zeros((24,32), dtype=np.int8)
+    processed_matrix, max_temp = VideoUtils.process_frame(frame, (30, 40))

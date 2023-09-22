@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-opencv-python = "*"
 pigpio = "*"
 adafruit-circuitpython-mlx90640 = "*"
+opencv-python = "*"
 
 [dev-packages]
 
