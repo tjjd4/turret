@@ -57,7 +57,7 @@ for i in range(4):
     start_time = time.time()
     move_with_sleep(GPIO_MOTOR1, 1500 + i * 100)
     move_with_sleep(GPIO_MOTOR2, 1500 + i * 100)
-    print("total time: %s" % (time.time() - start_time()))
+    print("total time: %s" % (time.time() - start_time))
 
 
 time.sleep(3)
@@ -73,7 +73,7 @@ for i in range(4):
     t_m2.start()
     t_m1.join()
     t_m2.join()
-    print("total time: %s" % (time.time() - start_time()))
+    print("total time: %s" % (time.time() - start_time))
 
 time.sleep(3)
 print('--- move with sleep with thread ---')
@@ -88,7 +88,7 @@ for i in range(4):
     t_m2.start()
     t_m1.join()
     t_m2.join()
-    print("total time: %s" % (time.time() - start_time()))
+    print("total time: %s" % (time.time() - start_time))
 
 
 pi.write(GPIO_MOTOR1, 0)
