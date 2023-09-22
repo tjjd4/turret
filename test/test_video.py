@@ -35,7 +35,7 @@ class VideoUtilsTestCase(unittest.TestCase):
         self.assertTrue((processed_matrix == 0).all())
         self.assertEqual(max_temp, 0)
         
-    def test_frame_with_values_in_temp_range(self):
+    def test_frame_with_all_values_in_temp_range(self):
         frame = [35] * (24 * 32) # All values are within the temp_range
         temp_range = (30, 40)
         
@@ -51,16 +51,24 @@ class VideoUtilsTestCase(unittest.TestCase):
         processed_matrix, max_temp = VideoUtils.process_frame(frame, temp_range)
         
         self.assertTrue((processed_matrix == 0).all()) # Expecting all zeros in the processed_matrix
-        self.assertEqual(max_temp, 25)
+        self.assertEqual(max_temp, 0)
     
-    def test_frame_with_values_in_temp_range_fuk(self):
-        frame = [46] * (24 * 32) # All values are within the temp_range
+    def test_frame_some_values_in_temp_range_fuk(self):
+        frame = [20] * (24 * 32) # All values are within the temp_range
+        frame = np.array(frame, dtype=np.float32).reshape(24,32)
+        assert_matrix = [0] * (24 * 32)
+        assert_matrix = np.array(assert_matrix, dtype=np.float32).reshape(24,32)
+        for i in range(1,6):
+            for j in range(1,4):
+                frame[i][j] = 35
+                assert_matrix[i][j] = 255
         temp_range = (30, 40)
         
-        processed_matrix, max_temp = VideoUtils.process_frame(frame, temp_range)
         
-        self.assertTrue(np.any(processed_matrix != 0)) # Expecting some non-zero values in the processed_matrix
-        self.assertEqual(max_temp, 46)
+
+        processed_matrix, max_temp = VideoUtils.process_frame(frame, temp_range)
+        self.assertEqual(processed_matrix.tolist(), assert_matrix.tolist()) # Expecting some non-zero values in the processed_matrix
+        self.assertEqual(max_temp, 35)
 
     # This test checks the centroid difference for a given thresholded matrix.
     def test_find_centroid_difference(self):
