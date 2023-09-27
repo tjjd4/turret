@@ -8,6 +8,7 @@ pigpio = "*"
 adafruit-circuitpython-mlx90640 = "*"
 opencv-python = "*"
 numpy = "*"
+mlx9064x-driver = "*"
 
 [dev-packages]
 
