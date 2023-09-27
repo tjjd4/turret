@@ -9,7 +9,7 @@ import time
 
 import logging
 import numpy as np
-import mlx.mlx90640 as mlx
+import mlx.mlx90640 as mlx90640
 
 '''
 MLX90640-BAA IR Thermal Camera
@@ -37,13 +37,13 @@ class VideoUtils(object):
         mlx.init()
 
         # mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
-        print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
+        # print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
         return mlx
     
     @staticmethod
     def get_mlx90640():
         # i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
-        mlx = mlx.Mlx9064x('COM4', i2c_addr=0x33, frame_rate=16.0)
+        mlx = mlx90640.Mlx9064x('COM4', i2c_addr=0x33, frame_rate=16.0)
         return mlx
     
     @staticmethod
