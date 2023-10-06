@@ -43,7 +43,7 @@ class VideoUtils(object):
     @staticmethod
     def get_mlx90640():
         # i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
-        mlx = mlx90640.Mlx9064x('COM4', i2c_addr=0x33, frame_rate=16.0)
+        mlx = mlx90640.Mlx9064x('I2CBB-03-05', i2c_addr=0x33, frame_rate=8.0)
         return mlx
     
     @staticmethod
