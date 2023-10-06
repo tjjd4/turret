@@ -89,20 +89,20 @@ class Turret(object):
         t_m2 = threading.Thread()
 
         
-        if x > 0:
+        if x > 1:
             if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
                 self.m1_pulsewidth = self.m1_pulsewidth + 25
                 t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
-        elif x < 0:
+        elif x < -1:
             if self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
                 self.m1_pulsewidth = self.m1_pulsewidth - 25
                 t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         
-        if y > 0:
+        if y > 1:
             if self.m2_pulsewidth < MOTOR_PULSEWIDTH_MAX:
                 self.m2_pulsewidth = self.m2_pulsewidth - 25
                 t_m2 = threading.Thread(target=self.__move, args=(GPIO_MOTOR2, self.m2_pulsewidth))
-        elif y < 0:
+        elif y < -1:
             if self.m2_pulsewidth > MOTOR_PULSEWIDTH_MIN:
                 self.m2_pulsewidth = self.m2_pulsewidth + 25
                 t_m2 = threading.Thread(target=self.__move, args=(GPIO_MOTOR2, self.m2_pulsewidth))
@@ -130,34 +130,3 @@ class Turret(object):
         self.pi.write(GPIO_MOTOR1, 0)
         self.pi.write(GPIO_MOTOR2, 0)
         self.pi.stop()
-
-if __name__ == '__main__':
-
-    user_input = input("Choose an mode: (1) Thermal Tracking (2) Customize Setting \n")
-    if str(user_input) == "1":
-        t = Turret()
-        t.calibrate()
-        t.thermal_tracking()
-    elif str(user_input) == "2":
-        low_temp = input("Setting: detect temp range from ? (Type the lowest temperture be detected)\n")
-        try:
-            low = int(low_temp)
-        except:
-            print("Invalid input. Please enter a valid integer.")
-            exit(1)
-        high_temp = input(f"Setting: detect temp range from {low} to ? (Type the highest temperture be detected)\n")
-        try:
-            high = int(high_temp)
-        except:
-            print("Invalid input. Please enter a valid integer.")
-            exit(1)
-        if low >= high:
-            print("Invalid input. From 'low' to 'high'.")
-            exit(1)
-        else:
-            t = Turret((low, high))
-            t.calibrate()
-            t.thermal_tracking()
-
-    else:
-        print("Unknown input mode. Please choose a number (1) or (2)")
