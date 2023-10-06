@@ -116,6 +116,7 @@ class Turret(object):
     def __move(self, motor, puslewidth):
         logging.debug("-------------move---------------")
         pulsewidth_now = self.pi.get_servo_pulsewidth(motor)
+        logging.debug("moving motor: %s" % (motor))
         logging.debug("pulsewidth_now: %s" % (pulsewidth_now))
         if (pulsewidth_now < 2000 and pulsewidth_now > 1000 ):
             self.pi.set_servo_pulsewidth(motor, puslewidth)
