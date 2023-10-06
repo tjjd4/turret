@@ -1,15 +1,15 @@
 import cv2
 import time
-try:
-    import busio
-    import board
-    # ... other hardware-specific imports
-except (ImportError, NotImplementedError):
-    pass
+# try:
+#     import busio
+#     import board
+#     # ... other hardware-specific imports
+# except (ImportError, NotImplementedError):
+#     pass
 
 import logging
 import numpy as np
-import adafruit_mlx90640
+import mlx.mlx90640 as mlx90640
 
 '''
 MLX90640-BAA IR Thermal Camera
@@ -34,14 +34,16 @@ class VideoUtils(object):
     @staticmethod
     def init_mlx90640():
         mlx = VideoUtils.get_mlx90640()
-        mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
-        print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
+        mlx.init()
+
+        # mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_16_HZ
+        # print("MLX addr detected on I2C", [hex(i) for i in mlx.serial_number])
         return mlx
     
     @staticmethod
     def get_mlx90640():
-        i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
-        mlx = adafruit_mlx90640.MLX90640(i2c)
+        # i2c = busio.I2C(board.SCL, board.SDA, frequency=1000000)
+        mlx = mlx90640.Mlx9064x('COM4', i2c_addr=0x33, frame_rate=16.0)
         return mlx
     
     @staticmethod
@@ -79,7 +81,7 @@ class VideoUtils(object):
     @staticmethod
     def thermal_detection(callback, temp_range):
         mlx = VideoUtils.init_mlx90640()
-        frame = [0] * 768
+        # frame = [0] * 768
         frame_interval = 1.0 / 16
         program_time = time.time()
         frame_count = 0
@@ -89,10 +91,11 @@ class VideoUtils(object):
                 try:
                     logging.debug("start new frame")
                     start_time = time.time()
-                    mlx.getFrame(frame)
+                    # mlx.getFrame(frame)
+                    frame = mlx.read_frame()
                     image_time = time.time()
-
-                    thresholded_matrix, highest_temp = VideoUtils.process_frame(frame, temp_range)
+                    temp_frame = mlx.do_compensation(frame)
+                    thresholded_matrix, highest_temp = VideoUtils.process_frame(temp_frame, temp_range)
                     centroid, difference_to_center = VideoUtils.find_centroid_difference(thresholded_matrix)
 
 
