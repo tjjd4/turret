@@ -86,6 +86,10 @@ class Turret(object):
         t_m1 = threading.Thread()
         t_m2 = threading.Thread()
 
+        motor1_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR1)
+        motor2_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR2)
+        logging.debug("motor1 pulsewidth now: %s" % (motor1_pulsewidth_now))
+        logging.debug("motor2 pulsewidth now: %s" % (motor2_pulsewidth_now))
         
         if x > 1:
             if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
@@ -115,11 +119,7 @@ class Turret(object):
     
     def __move(self, motor, puslewidth):
         logging.debug("-------------move---------------")
-        pulsewidth_now = self.pi.get_servo_pulsewidth(motor)
-        logging.debug("moving motor: %s" % (motor))
-        logging.debug("pulsewidth_now: %s" % (pulsewidth_now))
-        if (pulsewidth_now < 2000 and pulsewidth_now > 1000 ):
-            self.pi.set_servo_pulsewidth(motor, puslewidth)
+        self.pi.set_servo_pulsewidth(motor, puslewidth)
 
 
     # start thermal detection
