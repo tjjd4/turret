@@ -115,7 +115,9 @@ class Turret(object):
     
     def __move(self, motor, puslewidth):
         logging.debug("-------------move---------------")
-        self.pi.set_servo_pulsewidth(motor, puslewidth)
+        puslewidth_now = self.pi.get_servo_pulsewidth(motor)
+        if (puslewidth_now < 2000 and puslewidth_now > 1000 ):
+            self.pi.set_servo_pulsewidth(motor, puslewidth)
 
 
     # start thermal detection
