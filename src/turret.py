@@ -94,24 +94,20 @@ class Turret(object):
         if x > 1:
             if y >= 0:
                 if self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
-                    logging.debug("motor1 - pulsewidth")
-                    self.m1_pulsewidth = self.m1_pulsewidth - 25
+                    self.m1_pulsewidth = self.m1_pulsewidth + 25
                     t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
             if y < 0:
                 if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
-                    logging.debug("motor1 + pulsewidth")
-                    self.m1_pulsewidth = self.m1_pulsewidth + 25
+                    self.m1_pulsewidth = self.m1_pulsewidth - 25
                     t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         elif x < -1:
             if y >= 0:
                 if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
-                    logging.debug("motor1 + pulsewidth")
-                    self.m1_pulsewidth = self.m1_pulsewidth + 25
+                    self.m1_pulsewidth = self.m1_pulsewidth - 25
                     t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
             if y < 0:
                 if self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
-                    logging.debug("motor1 - pulsewidth")
-                    self.m1_pulsewidth = self.m1_pulsewidth - 25
+                    self.m1_pulsewidth = self.m1_pulsewidth + 25
                     t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         
         if y > 1:
