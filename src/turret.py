@@ -2,8 +2,6 @@ import atexit
 import threading
 import logging
 import pigpio
-import numpy as np
-import adafruit_mlx90640
 from src.videoUtils import VideoUtils
 
 '''
