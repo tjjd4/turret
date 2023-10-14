@@ -36,7 +36,7 @@ if __name__ == '__main__':
                 logging.getLogger().setLevel(logging.INFO)
 
         except:
-            print("Invalid input. Please enter a valid integer.")
+            print("Invalid input. Please enter the valid integer 1 or 2.")
             exit(1)
         
         t = Turret((low, high))
