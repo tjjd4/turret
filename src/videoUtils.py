@@ -1,3 +1,4 @@
+import sys
 import cv2
 import time
 # try:
@@ -124,13 +125,13 @@ class VideoUtils(object):
             logging.info("detection time : %s" % (time.time() - program_time))
             logging.info('Total frames count: '+str(frame_count))
             logging.info("Restart Count : %s" % restart_count)
-            exit(1)
+            sys.exit(1)
         except KeyboardInterrupt:
             logging.debug("Key Board Interrupt")
             logging.info("detection time : %s" % (time.time() - program_time))
             logging.info('Total frames count: '+str(frame_count))
             logging.info("Restart Count : %s" % restart_count)
-            exit(0)
+            sys.exit(0)
 
 if __name__ == '__main__':
     frame = np.zeros((24,32), dtype=np.int8)

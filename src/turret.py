@@ -1,4 +1,5 @@
 import atexit
+import time
 import threading
 import logging
 import pigpio
@@ -53,7 +54,7 @@ class Turret(object):
     Class used for turret control
     control a turret with two servo motor
     '''
-    def __init__(self, temp_range = (30, 40)):
+    def __init__(self, temp_range = (50, 300)):
         logging.info('Turret Start initialize')
 
         self.temp_range = temp_range
@@ -62,14 +63,9 @@ class Turret(object):
         self.pi = pigpio.pi()
         self.pi.set_mode(GPIO_MOTOR1, pigpio.OUTPUT)
         self.pi.set_mode(GPIO_MOTOR2, pigpio.OUTPUT)
-        # self.pi.set_PWM_frequency(GPIO_MOTOR1, MOTOR_PWM_FREQUENCY)
-        # self.pi.set_PWM_range(GPIO_MOTOR1, MOTOR_PWM_RANGE)
-        # self.pi.set_PWM_frequency(GPIO_MOTOR2, MOTOR_PWM_FREQUENCY)
-        # self.pi.set_PWM_range(GPIO_MOTOR2, MOTOR_PWM_RANGE)
-
 
         # set to relocate and release the motors
-        atexit.register(self.__turn_off_motors)
+        atexit.register(self.__turn_off)
         logging.info('Turret Initialize sucess')
 
     # calibrate two servo motors to central position
@@ -86,10 +82,10 @@ class Turret(object):
         t_m1 = threading.Thread()
         t_m2 = threading.Thread()
 
-        motor1_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR1)
-        motor2_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR2)
-        logging.debug("motor1 pulsewidth now: %s" % (motor1_pulsewidth_now))
-        logging.debug("motor2 pulsewidth now: %s" % (motor2_pulsewidth_now))
+        # motor1_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR1)
+        # motor2_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR2)
+        # logging.debug("motor1 pulsewidth now: %s" % (motor1_pulsewidth_now))
+        # logging.debug("motor2 pulsewidth now: %s" % (motor2_pulsewidth_now))
 
         if x > 1:
             if y >= 0:
@@ -133,12 +129,16 @@ class Turret(object):
 
 
     # start thermal detection
-    def thermal_tracking(self):
+    def start(self):
         VideoUtils.thermal_detection(self.track, self.temp_range)
+
+    def stop(self):
+        self.__turn_off()
     
 
-    def __turn_off_motors(self):
+    def __turn_off(self):
         self.calibrate()
+        time.sleep(0.5)
         self.pi.write(GPIO_MOTOR1, 0)
         self.pi.write(GPIO_MOTOR2, 0)
         self.pi.stop()
