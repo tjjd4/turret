@@ -66,6 +66,7 @@ Thermal Camera: [MLX90640-BAA IR Thermal Camera](https://twarm.com/commerce/prod
 
   ```bash
   git clone https://github.com/seantjjd4/Adafruit_CircuitPython_MLX90640.git
+
   # in your project enviroment
   pip install -e /path/to/Adafruit_CircuitPython_MLX90640/
   
@@ -73,18 +74,30 @@ Thermal Camera: [MLX90640-BAA IR Thermal Camera](https://twarm.com/commerce/prod
 
 ## Usage
 
-```python
-import foobar
+```bash
+cd /path/to/project_folder
 
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
+python3 main.py
 ```
+### To Run Test
+```bash
+python3 -m unittest
+
+# to run specific test file
+python3 -m unittest test/test_file
+```
+## Set Auto Start
+There are serveral autostart methods in raspberry pi.
+In this case, we are not interest about the user who login the system, so setting autostart using system method is quite appropriate.
+
+```bash
+sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
+```
+Add the command bellow at the last line of the file:
+```bash
+@python3 /path/to/project_folder/main.py
+```
+Restart and check the status!
 
 ## Contributing
 

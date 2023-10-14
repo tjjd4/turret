@@ -35,12 +35,15 @@ def move_with_sleep(motor, pulsewidth):
     pi.set_servo_pulsewidth(motor, pulsewidth)
     time.sleep(0.3)
 
-print("getting data")
-print(pi.get_PWM_frequency(GPIO_MOTOR1))
-print(pi.get_PWM_range(GPIO_MOTOR1))
-print(pi.get_PWM_dutycycle(GPIO_MOTOR1))
 time.sleep(3)
-print('--- move no sleep ---')
+
+move(GPIO_MOTOR1, 1200)
+move(GPIO_MOTOR2, 1200)
+
+time.sleep(3)
+
+move(GPIO_MOTOR1, 1800)
+move(GPIO_MOTOR2, 1800)
 
 for i in range(4):
     
