@@ -171,8 +171,9 @@ class Turret(object):
         self.__turn_off()
 
     def __turn_off(self):
-        self.calibrate()
-        time.sleep(0.5)
-        self.pi4.write(GPIO_MOTOR1, 0)
-        self.pi4.write(GPIO_MOTOR2, 0)
-        self.pi4.stop()
+        if self.status != TURRET_OFF:
+            self.calibrate()
+            time.sleep(0.5)
+            self.pi4.write(GPIO_MOTOR1, 0)
+            self.pi4.write(GPIO_MOTOR2, 0)
+            self.pi4.stop()
