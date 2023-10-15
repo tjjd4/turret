@@ -88,14 +88,16 @@ python3 -m unittest test/test_file
 ```
 ## Set Auto Start
 There are serveral autostart methods in raspberry pi.
-In this case, we are not interest about the user who login the system, so setting autostart using system method is quite appropriate.
+In this case, we are not interest about the user who login the system, so setting autostart using system method that modified `/etc/rc.local` is quite appropriate.
 
 ```bash
-sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
+sudo nano /etc/rc.local
 ```
-Add the command bellow at the last line of the file:
+Add the command before the last line of the file and leave `exit(0)` to be the last line:
 ```bash
-@python3 /path/to/project_folder/main.py
+# Adding `&` to make sure boot process will not stuck when executing the turret program,
+# it start a subprocess to execute, instead.
+/path/to/turret/autostart.sh &
 ```
 Restart and check the status!
 
