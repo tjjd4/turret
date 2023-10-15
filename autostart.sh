@@ -11,4 +11,4 @@ else
     sudo pigpiod
 fi
 
-python3 autostart.py
+python3 /home/billy/Desktop/turret/autostart.py
