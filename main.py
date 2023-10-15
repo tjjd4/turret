@@ -1,4 +1,5 @@
 if __name__ == '__main__':
+    import time
     import logging
     from src.turret import Turret
 
@@ -42,6 +43,14 @@ if __name__ == '__main__':
         t = Turret((low, high))
         t.calibrate()
         t.start()
+
+    while True:
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            # Handle Ctrl+C to gracefully exit the program
+            t.stop()
+            t.off()
 
     else:
         print("Unknown input mode. Please choose a number (1) or (2)")
