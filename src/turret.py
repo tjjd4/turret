@@ -17,8 +17,8 @@ channel 1:
     GPIO 13
     GPIO 19
 '''
-GPIO_MOTOR1 = 17
-GPIO_MOTOR2 = 27
+GPIO_MOTOR1 = 12
+GPIO_MOTOR2 = 13
 
 '''
 K-Power Hb200t 12V 200kg Torque Steel Gear Digital Industrial Servo

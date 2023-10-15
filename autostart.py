@@ -3,8 +3,8 @@ This version is set up for turret project could be
 control over two button -- on, off -- to activate and turn off.
 The GPIO Pin should be specific
 '''
-GPIO_ON = 5
-GPIO_OFF = 6
+GPIO_ON = 17
+GPIO_OFF = 27
 
 if __name__ == '__main__':
     import sys
