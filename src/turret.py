@@ -167,8 +167,8 @@ class Turret(object):
             logging.warning("---------turret is not running !!!---------")
     
     def off(self):
-        self.status = TURRET_OFF
         self.__turn_off()
+        self.status = TURRET_OFF
 
     def __turn_off(self):
         if self.status != TURRET_OFF:
