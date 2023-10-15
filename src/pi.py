@@ -17,3 +17,6 @@ class Pi(object):
 
     def write(self, gpio, level):
         self.pi.write(gpio, level)
+
+    def callback(self, gpio, edge, func):
+        self.pi.callback(gpio, edge, func)
