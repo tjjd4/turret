@@ -4,6 +4,7 @@ import atexit
 class Pi(object):
     def __init__(self):
         self.pi = pigpio.pi()
+        atexit.register(self.stop())
 
     def setServoPulsewidth(self, gpio, pulsewidth):
         self.pi.set_servo_pulsewidth(gpio, pulsewidth)

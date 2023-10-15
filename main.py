@@ -7,7 +7,7 @@ if __name__ == '__main__':
         logging.getLogger().setLevel(logging.DEBUG)
         t = Turret()
         t.calibrate()
-        t.thermal_tracking()
+        t.start()
     elif str(user_input) == "2":
         low_temp = input("Setting: detect temp range from ? (Type the lowest temperture be detected)\n")
         try:
@@ -41,7 +41,7 @@ if __name__ == '__main__':
         
         t = Turret((low, high))
         t.calibrate()
-        t.thermal_tracking()
+        t.start()
 
     else:
         print("Unknown input mode. Please choose a number (1) or (2)")

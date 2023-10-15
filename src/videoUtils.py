@@ -32,6 +32,8 @@ class VideoUtils(object):
     '''
     Class used for video processing
     '''
+    run = False
+
     @staticmethod
     def init_mlx90640():
         mlx = VideoUtils.get_mlx90640()
@@ -98,7 +100,6 @@ class VideoUtils(object):
                     temp_frame = mlx.do_compensation(frame)
                     thresholded_matrix, highest_temp = VideoUtils.process_frame(temp_frame, temp_range)
                     centroid, difference_to_center = VideoUtils.find_centroid_difference(thresholded_matrix)
-
 
                     if centroid:
                         logging.debug(f'Difference from the most central point: {difference_to_center}')
