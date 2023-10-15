@@ -17,8 +17,8 @@ channel 1:
     GPIO 13
     GPIO 19
 '''
-GPIO_MOTOR1 = 12
-GPIO_MOTOR2 = 13
+GPIO_MOTOR1 = 17
+GPIO_MOTOR2 = 27
 
 '''
 K-Power Hb200t 12V 200kg Torque Steel Gear Digital Industrial Servo
@@ -147,7 +147,7 @@ class Turret(object):
 
 
     # start thermal detection
-    def start(self, pi4=None):
+    def start(self, pi4=None, *args):
         if self.status == TURRET_PENDING:
             self.status = TURRET_RUNNING
             self.m_thermal_detection = multiprocessing.Process(target=VideoUtils.thermal_detection, args=(self.track, self.temp_range))
