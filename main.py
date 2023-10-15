@@ -1,4 +1,5 @@
 if __name__ == '__main__':
+    import sys
     import time
     import logging
     from src.turret import Turret
@@ -15,16 +16,16 @@ if __name__ == '__main__':
             low = int(low_temp)
         except:
             print("Invalid input. Please enter a valid integer.")
-            exit(1)
+            sys.exit(1)
         high_temp = input(f"Setting: detect temp range from {low} to ? (Type the highest temperture be detected)\n")
         try:
             high = int(high_temp)
         except:
             print("Invalid input. Please enter a valid integer.")
-            exit(1)
+            sys.exit(1)
         if low >= high:
             print("Invalid input. From 'low' to 'high'.")
-            exit(1)
+            sys.exit(1)
         
 
         log_level = input("Logger level: (1) debug (2) info\n")
@@ -38,7 +39,7 @@ if __name__ == '__main__':
 
         except:
             print("Invalid input. Please enter the valid integer 1 or 2.")
-            exit(1)
+            sys.exit(1)
         
         t = Turret((low, high))
         t.calibrate()
@@ -51,6 +52,7 @@ if __name__ == '__main__':
             # Handle Ctrl+C to gracefully exit the program
             t.stop()
             t.off()
+            sys.exit()
 
     else:
         print("Unknown input mode. Please choose a number (1) or (2)")
