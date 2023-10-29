@@ -99,6 +99,30 @@ Add the command before the last line of the file and leave `exit(0)` to be the l
 # it start a subprocess to execute, instead.
 /path/to/turret/autostart.sh &
 ```
+## Systemd service setting
+Using systemd service unit for auto start raspberry pi project
+1. Create a systemd service unit file
+```bash
+sudo nano /etc/systemd/system/turret.service
+```
+2. Add the following content to the turret.service file
+```bash
+[Unit]
+Description=My Raspberry Pi Project
+
+[Service]
+ExecStart=/usr/bin/python3 -m http.server 80 --directory=/home/kaosuperman/turret
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+3. Reload systemd to read the new service unit after save the file
+```bash
+sudo systemctl daemon-reload
+```
+
 Restart and check the status!
 
 ## Contributing
