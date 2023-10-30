@@ -112,17 +112,24 @@ Description=My Raspberry Pi Project
 
 [Service]
 ExecStart=/usr/bin/python3 -m http.server 80 --directory=/home/kaosuperman/turret
-Restart=always
-User=pi
+Restart=on-failure
+User=your_user_name
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 ```
 3. Reload systemd to read the new service unit after save the file
 ```bash
 sudo systemctl daemon-reload
 ```
-
+4. Enable the service to your project
+```bash
+sudo systemctl enable turret.service
+```
+5. Start your service
+```bash
+sudo systemctl start turret.service
+```
 Restart and check the status!
 
 ## Contributing
