@@ -3,6 +3,7 @@ import time
 import threading
 import logging
 import multiprocessing
+from simple_pid import PID
 from src.videoUtils import VideoUtils
 from src.pi import Pi
 
@@ -65,6 +66,8 @@ class Turret(object):
 
         self.status = TURRET_OFF
 
+        self.pid = PID(1, 0.1, 0.05, setpoint=0)
+        self.pid.sample_time = 1.0 / 16
         # initialize raspberry pi connection
         self.initial_setup(temp_range, pi4)
 
@@ -101,24 +104,21 @@ class Turret(object):
         # motor2_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR2)
         # logging.debug("motor1 pulsewidth now: %s" % (motor1_pulsewidth_now))
         # logging.debug("motor2 pulsewidth now: %s" % (motor2_pulsewidth_now))
+
         if x > 1:
-            if y >= 0:
-                if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
-                    self.m1_pulsewidth = self.m1_pulsewidth + 25
-                    t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
-            if y < 0:
-                if self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
-                    self.m1_pulsewidth = self.m1_pulsewidth - 25
-                    t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
+            if self.m1_pulsewidth >= MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
+                self.m1_pulsewidth = self.m1_pulsewidth + 25
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
+            elif self.m1_pulsewidth < MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
+                self.m1_pulsewidth = self.m1_pulsewidth - 25
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         elif x < -1:
-            if y >= 0:
-                if self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
-                    self.m1_pulsewidth = self.m1_pulsewidth - 25
-                    t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
-            if y < 0:
-                if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
-                    self.m1_pulsewidth = self.m1_pulsewidth + 25
-                    t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
+            if self.m1_pulsewidth >= MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
+                self.m1_pulsewidth = self.m1_pulsewidth - 25
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
+            elif self.m1_pulsewidth < MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
+                self.m1_pulsewidth = self.m1_pulsewidth + 25
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         
         if y > 1:
             if self.m2_pulsewidth > MOTOR_PULSEWIDTH_MIN:

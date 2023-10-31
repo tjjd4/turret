@@ -53,14 +53,19 @@ class VideoUtils(object):
     def process_frame(frame, temp_range):
         thermal_matrix = np.array(frame, dtype=np.float32).reshape(24, 32)
         # blurred_matrix = cv2.GaussianBlur(thermal_matrix, (5, 5), 0)
+
         mask = ((thermal_matrix > temp_range[0]) & (thermal_matrix < temp_range[1]))
         thresholded_matrix = mask.astype(np.uint8) * 255
+
         contours, _ = cv2.findContours(thresholded_matrix, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
         if len(contours) == 0:
             return np.zeros_like(thresholded_matrix), 0
+        
         contours = sorted(contours, key=cv2.contourArea, reverse=True)
         largest_region = np.zeros_like(thresholded_matrix)
         cv2.drawContours(largest_region, [contours[0]], 0, 255, thickness=cv2.FILLED)
+        
         return largest_region, thermal_matrix.max()
 
     @staticmethod
