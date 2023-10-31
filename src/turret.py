@@ -3,7 +3,6 @@ import time
 import threading
 import logging
 import multiprocessing
-import pigpio
 from src.videoUtils import VideoUtils
 from src.pi import Pi
 
@@ -58,8 +57,8 @@ control a turret with two servo motor
 TURRET_PENDING = 0
 TURRET_OFF = -1
 TURRET_RUNNING = 1
-class Turret(object):
 
+class Turret(object):
     
     def __init__(self, temp_range = (50, 300), pi4=None):
         logging.info('Turret Start initialize')
@@ -67,19 +66,18 @@ class Turret(object):
         self.status = TURRET_OFF
 
         # initialize raspberry pi connection
-        self.initialSetup(temp_range, pi4)
+        self.initial_setup(temp_range, pi4)
 
         # set to relocate and release the motors
-        atexit.register(self.__turn_off)
+        atexit.register(self.off)
 
-    def initialSetup(self, temp_range = (50, 300), pi4 = None):
+    def initial_setup(self, temp_range = (50, 300), pi4 = None):
         if self.status == TURRET_OFF:
             self.temp_range = temp_range
             if pi4 == None:
                 pi4 = Pi()
             self.pi4 = pi4
-            self.pi4.setMode(GPIO_MOTOR1, pigpio.OUTPUT)
-            self.pi4.setMode(GPIO_MOTOR2, pigpio.OUTPUT)
+            self.pi4.initialize()
             self.status = TURRET_PENDING
             logging.info('Turret Initialize sucess')
         else:
@@ -89,8 +87,7 @@ class Turret(object):
     # calibrate two servo motors to central position
     def calibrate(self):
         logging.debug('Start calibrate')
-        self.pi4.setServoPulsewidth(GPIO_MOTOR1, MOTOR_PULSEWIDTH_MID)
-        self.pi4.setServoPulsewidth(GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID)
+        self.pi4.calibrate()
         self.m1_pulsewidth = MOTOR_PULSEWIDTH_MID
         self.m2_pulsewidth = MOTOR_PULSEWIDTH_MID
         logging.debug('Calibrate success')
@@ -104,7 +101,6 @@ class Turret(object):
         # motor2_pulsewidth_now = self.pi.get_servo_pulsewidth(GPIO_MOTOR2)
         # logging.debug("motor1 pulsewidth now: %s" % (motor1_pulsewidth_now))
         # logging.debug("motor2 pulsewidth now: %s" % (motor2_pulsewidth_now))
-
         if x > 1:
             if y >= 0:
                 if self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
@@ -143,7 +139,7 @@ class Turret(object):
     
     def __move(self, motor, puslewidth):
         logging.debug("-------------move---------------")
-        self.pi4.setServoPulsewidth(motor, puslewidth)
+        self.pi4.move(motor, puslewidth)
 
 
     # start thermal detection
@@ -154,7 +150,7 @@ class Turret(object):
             self.m_thermal_detection.daemon = True
             self.m_thermal_detection.start()
         elif self.status == TURRET_OFF:
-            self.initialSetup(self.temp_range, pi4)
+            self.initial_setup(self.temp_range, pi4)
             self.start()
         else:
             logging.warning("---------turret is running !!!---------")
@@ -170,13 +166,11 @@ class Turret(object):
         if self.status == TURRET_RUNNING:
             self.status = TURRET_PENDING
             self.m_thermal_detection.terminate()
-        self.__turn_off()
-        self.status = TURRET_OFF
 
-    def __turn_off(self):
         if self.status != TURRET_OFF:
             self.calibrate()
             time.sleep(0.5)
-            self.pi4.write(GPIO_MOTOR1, 0)
-            self.pi4.write(GPIO_MOTOR2, 0)
-            self.pi4.stop()
+            self.pi4.motorOff()
+            self.pi4.endConnection()
+
+        self.status = TURRET_OFF

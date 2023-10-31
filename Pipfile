@@ -9,6 +9,7 @@ adafruit-circuitpython-mlx90640 = "*"
 opencv-python = "*"
 numpy = "*"
 mlx9064x-driver = "*"
+simple-pid = "*"
 
 [dev-packages]
 

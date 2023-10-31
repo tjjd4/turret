@@ -10,7 +10,6 @@ if __name__ == '__main__':
     import sys
     import time
     import logging
-    import pigpio
     from src.pi import Pi
     from src.turret import Turret
 
@@ -20,8 +19,8 @@ if __name__ == '__main__':
     # Initialize the turret
     t = Turret(pi4=pi4)
     t.calibrate()
-    pi4.callback(GPIO_ON, pigpio.FALLING_EDGE, t.start)
-    pi4.callback(GPIO_OFF, pigpio.FALLING_EDGE, t.stop)
+    pi4.setCallback(GPIO_ON, t.start)
+    pi4.setCallback(GPIO_OFF, t.stop)
     while True:
         try:
             time.sleep(1)
