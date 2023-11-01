@@ -159,6 +159,7 @@ class Turret(object):
         if self.status == TURRET_RUNNING:
             self.status = TURRET_PENDING
             self.m_thermal_detection.terminate()
+            self.calibrate()
         else:
             logging.warning("---------turret is not running !!!---------")
     
