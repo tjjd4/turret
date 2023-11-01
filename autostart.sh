@@ -9,6 +9,9 @@ if [[ "$output" =~ [0-9]+ ]]; then
 else
     echo "pigpiod is not activated..."
     sudo pigpiod
+    echo "pigpiod is activated now"
 fi
 
 python3 /home/billy/Desktop/turret/autostart.py
+
+exit 0
