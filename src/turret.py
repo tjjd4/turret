@@ -106,18 +106,18 @@ class Turret(object):
         # logging.debug("motor2 pulsewidth now: %s" % (motor2_pulsewidth_now))
 
         if x > 1:
-            if self.m2_pulsewidth >= MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
-                self.m1_pulsewidth = self.m1_pulsewidth + 25
-                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
-            elif self.m2_pulsewidth < MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
-                self.m1_pulsewidth = self.m1_pulsewidth - 25
-                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
-        elif x < -1:
             if self.m2_pulsewidth >= MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
                 self.m1_pulsewidth = self.m1_pulsewidth - 25
                 t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
             elif self.m2_pulsewidth < MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
                 self.m1_pulsewidth = self.m1_pulsewidth + 25
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
+        elif x < -1:
+            if self.m2_pulsewidth >= MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth < MOTOR_PULSEWIDTH_MAX:
+                self.m1_pulsewidth = self.m1_pulsewidth + 25
+                t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
+            elif self.m2_pulsewidth < MOTOR_PULSEWIDTH_MID and self.m1_pulsewidth > MOTOR_PULSEWIDTH_MIN:
+                self.m1_pulsewidth = self.m1_pulsewidth - 25
                 t_m1 = threading.Thread(target=self.__move, args=(GPIO_MOTOR1, self.m1_pulsewidth))
         
         if y > 1:
