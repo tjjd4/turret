@@ -155,7 +155,7 @@ class Turret(object):
         else:
             logging.warning("---------turret is running !!!---------")
 
-    def stop(self):
+    def stop(self, *args):
         if self.status == TURRET_RUNNING:
             self.status = TURRET_PENDING
             self.m_thermal_detection.terminate()
