@@ -1,6 +1,11 @@
 import pigpio
 import atexit
-from src.turret import GPIO_MOTOR1, GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID
+# from src.turret import GPIO_MOTOR1, GPIO_MOTOR2, MOTOR_PULSEWIDTH_MID
+
+GPIO_MOTOR1 = 12
+GPIO_MOTOR2 = 13
+
+MOTOR_PULSEWIDTH_MID = 1500
 
 class Pi(object):
     def __init__(self):
