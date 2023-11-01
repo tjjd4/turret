@@ -93,20 +93,25 @@ There are serveral autostart methods in raspberry pi.
 Using systemd service unit for auto start raspberry pi project
 1. Create a systemd service unit file
 ```bash
-sudo nano /etc/systemd/system/turret.service
+sudo nano /etc/systemd/system/turret-autostart.service
 ```
-2. Add the following content to the turret.service file
+2. Add the following content to the turret-autostart.service file
 ```bash
 [Unit]
-Description=My Raspberry Pi Project
+
+Description=Turret program autostart service
 
 [Service]
-ExecStart=/usr/bin/python3 -m http.server 80 --directory=/path/to/turret
+
+ExecStart=/bin/bash /path/to/turret/autostart.sh
+
 Restart=on-failure
-User=${your_user_name}
+
+User=${user-name}
 
 [Install]
-WantedBy=default.target
+
+WantedBy=multi-user.target
 ```
 3. Reload systemd to read the new service unit after save the file
 ```bash
@@ -114,13 +119,25 @@ sudo systemctl daemon-reload
 ```
 4. Enable the service to your project
 ```bash
-sudo systemctl enable turret.service
+sudo systemctl enable turret-autostart.service
 ```
 5. Start your service
 ```bash
-sudo systemctl start turret.service
+sudo systemctl start turret-autostart.service
 ```
-Restart and check the status!
+### Restart and check the status!
+Restart:
+```bash
+sudo reboot
+```
+Check service status and log:
+```bash
+sudo systemctl status turret-autostart.service
+```
+Check python program:
+```bash
+ps aux | grep python
+```
 
 ## Contributing
 
