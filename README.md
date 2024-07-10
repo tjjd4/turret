@@ -138,6 +138,8 @@ Check python program:
 ```bash
 ps aux | grep python
 ```
+## System Workflow
+![使用流程圖 drawio](https://github.com/tjjd4/turret/assets/61817112/7068c9a0-1762-46b2-a909-eb501806e91f)
 
 ## Contributing
 
